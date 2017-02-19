@@ -9,8 +9,8 @@
     <p>Welcome to <%= title %></p>
 	  <script src="/javascripts/socket.io.js"></script>
     <script>
-    var socket = io('//'+document.location.hostname+':3000');
-    socket.on('fuck', function (data) {
+    var socket = io('//' + document.location.hostname + ':3000');
+    socket.on('apply', function (data) {
         console.log(data);
     });
     </script>

@@ -45,7 +45,8 @@ router.post('/', function(req, res, next) {
         console.log("Connected successfully to server");
 
         insertAttendee(attendee, db, function(ret) {
-            console.log(ret);
+            console.log(ret.ops);
+            res.io.emit('apply', ret.ops[0]);
             res.send({
                 status: true
             });
