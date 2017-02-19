@@ -6,13 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var app = express();
+// Web Socket Support
 var expressWs = require('express-ws')(app);
-
-var index = require('./routes/index');
-var attendee = require('./routes/attendee');
-var moderate = require('./routes/moderate');
-var queue = require('./routes/queue');
-var apply = require('./routes/apply');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -25,6 +20,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+var index = require('./routes/index');
+var attendee = require('./routes/attendee');
+var moderate = require('./routes/moderate');
+var queue = require('./routes/queue');
+var apply = require('./routes/apply');
 
 app.use('/', index);
 app.use('/attendee', attendee);
