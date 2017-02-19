@@ -6,6 +6,7 @@ router.get('/', function(req, res, next) {
     res.render('index', { title: 'Express' });
 });
 
+// websocket test
 router.ws('/echo', function(ws, req) {
     ws.on('message', function(msg) {
         console.log(msg);

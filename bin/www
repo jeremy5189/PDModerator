@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-//var debug = require('debug')('pdmoderator:server');
+var debug = require('debug')('pdmoderator:server');
 //var http = require('http');
 
 /**
@@ -26,12 +26,12 @@ app.set('port', port);
  */
 
 // To make express-ws work
-app.listen(port, function() {
+var server = app.listen(port, function() {
     console.log('app listen on port %s', port);
 });
 
-//server.on('error', onError);
-//server.on('listening', onListening);
+server.on('error', onError);
+server.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.
