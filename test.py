@@ -55,6 +55,6 @@ if __name__ == '__main__':
     print("attendee POST success!")
     object_id = get_attendee(host=_host)[0]['_id']
     print("attendee GET success!")
-    put_attendee(object_id, _host)
+    put_attendee(object_id, host=_host)
     print("attendee PUT success!")
     print("Wow! Terrific!")
