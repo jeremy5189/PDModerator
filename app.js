@@ -5,13 +5,27 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// Set up routes
+var index = require('./routes/index');
+var attendee = require('./routes/attendee');
+var moderate = require('./routes/moderate');
+var queue = require('./routes/queue');
+var apply = require('./routes/apply');
+
+// Set up express and socket.io
 var app = express();
-// Web Socket Support
-var expressWs = require('express-ws')(app);
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+// make io global
+app.use(function(req, res, next) {
+    res.io = io;
+    next();
+});
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -20,12 +34,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-var index = require('./routes/index');
-var attendee = require('./routes/attendee');
-var moderate = require('./routes/moderate');
-var queue = require('./routes/queue');
-var apply = require('./routes/apply');
 
 app.use('/', index);
 app.use('/attendee', attendee);
@@ -51,4 +59,8 @@ app.use(function(err, req, res, next) {
     res.render('error');
 });
 
-module.exports = app;
+module.exports = {
+    app: app,
+    server: server,
+    io: io
+};
