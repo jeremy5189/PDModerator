@@ -2,7 +2,7 @@
   <div class="container" id="app">
     <div class="row">
       <div class="col-md-10 col-md-offset-1">
-        <alert type="success" dismissable="true">You Suck</alert>
+        <alert type="success">Current Topic: {{ topic }}</alert>
       </div>
     </div>
   </div>
@@ -15,6 +15,11 @@ export default {
   name: 'app',
   components: {
     alert,
+  },
+  data() {
+    return {
+      topic: 'Testing',
+    };
   },
 };
 </script>
