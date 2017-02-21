@@ -1,17 +1,20 @@
 <template>
-  <div id="app">
-    <img src="./assets/logo.png">
-    <hello></hello>
+  <div class="container" id="app">
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+        <alert type="success" dismissable="true">You Suck</alert>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import Hello from './components/Hello';
+import alert from 'vue-strap/src/Alert';
 
 export default {
   name: 'app',
   components: {
-    Hello,
+    alert,
   },
 };
 </script>

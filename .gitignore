@@ -39,10 +39,14 @@ jspm_packages
 
 # Client
 .DS_Store
-client/dist/
-client/test/unit/coverage
-client/test/e2e/reports
-client/selenium-debug.log
+dist/
+test/unit/coverage
+test/e2e/reports
+selenium-debug.log
 
+# Editor
 .vscode
+
+# Build to server public
+server/public
 
