@@ -1,8 +1,10 @@
 <template>
   <div class="row">
-    <div class="col-md-10 col-md-offset-1">
-      <h1>{{ title }}</h1>
+    <div class="col"></div>
+    <div class="col-auto">
+      <h2>{{ title }}</h2>
     </div>
+    <div class="col"></div>
   </div>
 </template>
 
