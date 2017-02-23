@@ -34,15 +34,17 @@
       <div class="col-3" id="timer-contain">
 
         <div class="counter">
-          <div class="square">
-            <h3 class="square-count">87</h3>
+          <div class="square" v-on:click="timer_click" v-on:contextmenu="timer_right_click">
+            <h3 unselectable="on" class="unselectable square-count">
+              {{ timer.countdown }}
+            </h3>
           </div>
-          <h4>剩餘秒數</h4>
+          <h4 v-on:click="timer_reconfig">剩餘秒數</h4>
         </div>
 
         <div class="counter">
           <div class="square">
-            <h3 class="square-count">6</h3>
+            <h3 unselectable="on" class="unselectable square-count">6</h3>
           </div>
           <h4>等待講者</h4>
         </div>
@@ -93,12 +95,57 @@ export default {
   name: 'queue',
   data() {
     return {
+      timer: {
+        setting: 3,
+        countdown: 3,
+        handle: null,
+        running: false,
+      },
       title: 'SITCON 論壇',
       subject: '早安我的社會主義朋友，平安喜樂，認同請分享，另外我是湊字數啦',
       attendee_gravatar: 'https://www.gravatar.com/avatar/ab28213a16494a32a1f1c896276037eb?s=150',
       attendee_name: '我是社會主義工人蒸蚌',
       summary: '洛克的政治哲學對「分配正義」這個議題有多麼重大的意義：它在「自然律」的基礎上，證明了資本主義的私有產權體制，不但不會構成道德不公平，更是保障古典自由主義對道德平等標準的一件事。又，在這樣的脈落下毀滅了',
     };
+  },
+  methods: {
+    timer_click() {
+      if (this.timer.countdown > 0 && !this.timer.running) {
+        // Pausing, will resume
+        this.timer.handle = setInterval(this.timer_countdown, 1000);
+      } else if (this.timer.countdown > 0 && this.timer.running) {
+        // Couting, will pause
+        this.timer_pause();
+      }
+      this.timer.running = !this.timer.running;
+    },
+    timer_pause() {
+      clearInterval(this.timer.handle);
+    },
+    timer_right_click(event) {
+      event.preventDefault();
+      this.timer_reset();
+    },
+    timer_countdown() {
+      this.timer.countdown -= 1;
+      if (this.timer.countdown <= 0) {
+        this.timer.countdown = 0;
+        this.timer.running = false;
+        clearInterval(this.timer.handle);
+      }
+    },
+    timer_reset() {
+      this.timer_pause();
+      this.timer.countdown = this.timer.setting;
+    },
+    timer_reconfig() {
+      let newTime = prompt('Enter countdown time in seconds');
+      newTime = parseInt(newTime, 10);
+      if (!isNaN(newTime)) {
+        this.timer.setting = newTime;
+        this.timer_reset();
+      }
+    },
   },
 };
 </script>
@@ -112,6 +159,7 @@ export default {
   border-radius: 50%;
   display: table;
   margin: 0 auto;
+  cursor: pointer;
 }
 .square-count {
   display: table-cell;
@@ -130,6 +178,7 @@ export default {
 #timer-contain h4 {
   margin-top: 15px;
   font-size: 2.5em;
+  cursor: pointer;
 }
 .queue-user {
   border-left-style: dashed;
@@ -208,5 +257,17 @@ export default {
 #userdata-contain {
   height: 200px;
   min-height: 200px;
+}
+*.unselectable {
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+
+   /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+   -ms-user-select: none;
+   user-select: none;
 }
 </style>
