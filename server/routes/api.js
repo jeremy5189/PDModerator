@@ -13,17 +13,21 @@ router.post('/attendee', function(req, res, next) {
 
   // Check post body data
   if (req.body.attendee_name === undefined ||
-    req.body.summary === undefined) {
+    req.body.summary === undefined ||
+    req.body.email === undefined) {
     console.log(req.body);
     console.log('Bad Request');
     res.status(400).send('Bad Request');
   }
 
   var moment = require('moment');
+  var md5 = require('md5');
 
   var attendee = {
     attendee_name: req.body.attendee_name,
     summary: req.body.summary,
+    email: req.body.email,
+    gravatar: 'https://www.gravatar.com/avatar/'+md5(req.body.email)+'?s=150',
     created_at: moment().unix(),
     recognized_at: 0, // To be toggled by moderators
     spoken_at: 0,
