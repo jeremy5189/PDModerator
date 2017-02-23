@@ -25,8 +25,9 @@ router.post('/attendee', function(req, res, next) {
     attendee_name: req.body.attendee_name,
     summary: req.body.summary,
     created_at: moment().unix(),
-    recognized: false, // To be toggled by moderators
-    removed: false
+    recognized_at: 0, // To be toggled by moderators
+    spoken_at: 0,
+    removed_at: 0
   };
 
   var MongoClient = require('mongodb').MongoClient,
@@ -89,8 +90,8 @@ router.get('/attendee', function(req, res, next) {
     var collection = db.collection('attendee');
 
     collection.find({
-      removed: false,
-      recognized: false
+      removed_at: 0,
+      recognized_at: 0
     }).toArray(function(err, ret) {
       console.log('get attendee list success');
       assert.equal(null, err);
