@@ -50,4 +50,4 @@ selenium-debug.log
 # Build to server public
 server/public
 
-config.json
+common-config.json

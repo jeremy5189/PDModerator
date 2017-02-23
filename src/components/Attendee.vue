@@ -39,7 +39,7 @@
 <script>
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
-export default {
+const attendee = {
   name: 'attendee',
   data() {
     return {
@@ -75,6 +75,8 @@ export default {
     },
   },
 };
+
+export default attendee;
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
