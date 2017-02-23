@@ -21,6 +21,11 @@
       <br>
 
       <div class="center">
+        <div id="g-recaptcha"></div>
+        <!-- TODO: onVerify not globally accessable -->
+        <div class="g-recaptcha" data-callback="onVerify" data-sitekey="6LfanRYUAAAAAPL2JK96iI3Y7WeLsq1FxuG54zBG" data-size="invisible">
+        </div>
+
         <b-button id="submit" @click="click">
           Submit
         </b-button>
@@ -32,6 +37,8 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 export default {
   name: 'attendee',
   data() {
@@ -39,10 +46,13 @@ export default {
       title: 'Speaker Queue',
       attendee_name: null,
       summary: null,
+      rcapt_sig_key: '6LfanRYUAAAAAPL2JK96iI3Y7WeLsq1FxuG54zBG',
+      rcapt_id: 0, // will be used later
     };
   },
   methods: {
     click() {
+      // grecaptcha.execute();
       this.$http.post('http://localhost:3000/api/attendee', {
         attendee_name: this.attendee_name,
         summary: this.summary,
@@ -53,6 +63,15 @@ export default {
         // Fail
         console.error(response);
       });
+    },
+    onVerify(response) {
+      console.log('Verify: %s', response);
+    },
+    onExpired() {
+      console.log('Expired');
+    },
+    resetRecaptcha() {
+      this.$refs.recaptcha.reset(); // Direct call reset method
     },
   },
 };
