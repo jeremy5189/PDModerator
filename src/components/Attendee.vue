@@ -13,8 +13,14 @@
         請輸入顯示名稱以排入講者 Queue，長度不得超過 10 字元
       </label>
 
+      <b-form-input v-model="email" id="email" class="input" placeholder="Enter your email"></b-form-input>
+      <label for="email">
+        請輸入電子郵件（會顯示成台上的 <a src="https://zh-tw.gravatar.com/">Gravatar</a>！）
+      </label>
+
+
       <textarea v-model="summary" name="summary" id="summary" class="form-control input" rows="5" placeholder="Enter your speaking summary"></textarea>
-      <label for="name">
+      <label for="summary">
         請輸入您的發言概要，至多不超過 140 個字元
       </label>
 
@@ -45,6 +51,7 @@ const attendee = {
     return {
       title: 'Speaker Queue',
       attendee_name: null,
+      email: null,
       summary: null,
       rcapt_sig_key: '6LfanRYUAAAAAPL2JK96iI3Y7WeLsq1FxuG54zBG',
       rcapt_id: 0, // will be used later
@@ -55,6 +62,7 @@ const attendee = {
       // grecaptcha.execute();
       this.$http.post('http://localhost:3000/api/attendee', {
         attendee_name: this.attendee_name,
+        email: this.email,
         summary: this.summary,
       }).then((response) => {
         // success
