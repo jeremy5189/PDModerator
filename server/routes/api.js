@@ -1,7 +1,7 @@
 var express = require('express');
 var { ObjectID } = require('mongodb');
 var router = express.Router();
-var config = require('../../config.json');
+var config = require('../../common-config.json');
 
 /*
 讓參加者申請上台
