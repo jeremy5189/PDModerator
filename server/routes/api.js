@@ -71,6 +71,40 @@ router.post('/attendee', function(req, res, next) {
 });
 
 /*
+  wow Queue!
+*/
+router.get('/queue', function(req, res, next) {
+
+  console.log('GET /api/queue');
+
+  var MongoClient = require('mongodb').MongoClient,
+    assert = require('assert');
+
+  // Connection URL
+  var url = 'mongodb://localhost:27017/pdmod';
+
+  // Use connect method to connect to the server
+  MongoClient.connect(url, function(err, db) {
+
+    assert.equal(null, err);
+    var collection = db.collection('attendee');
+
+    collection.find({
+      recognized_at: {$gt: 0},
+      spoken_at: 0
+    }).sort({
+      recognized_at: 1,
+      created_at: 1
+    }).toArray(function(err, ret) {
+      console.log('get queue list success');
+      assert.equal(null, err);
+      db.close();
+      res.send(ret);
+    });
+  });
+});
+
+/*
 給 moderate 拿到所有 (removed = false && recognized = false) attendee
 */
 router.get('/attendee', function(req, res, next) {
