@@ -80,8 +80,8 @@ export default {
       title: 'SITCON 論壇',
       subject: '說明發言規則',
       timer: {
-        setting: 3,
-        countdown: 3,
+        setting: 90,
+        countdown: 90,
         handle: null,
         running: false,
       },

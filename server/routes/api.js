@@ -67,7 +67,7 @@ router.post('/attendee', function(req, res, next) {
       console.log(ret.ops);
 
       // Emit Event to moderate
-      res.io.emit('apply', ret.ops[0]);
+      res.io.emit('newAttendee', ret.ops[0]);
 
       res.send({
         status: ret.result.ok
