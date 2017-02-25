@@ -2,11 +2,17 @@
 
 Panel Discussion Moderator for SITCON
 
+## Dev documents
+[https://hackmd.io/JzAmBYAYHYCMEYC0AzArAJgMyPNAHEntKNIgMbQCGqlEAbKgKbThA===?both](https://hackmd.io/JzAmBYAYHYCMEYC0AzArAJgMyPNAHEntKNIgMbQCGqlEAbKgKbThA===?both)
+
 ## Server
 
 ``` bash
 # Start express server at ./server/bin/www
-npm start
+npm run start
+
+# Start nodemon
+npm run mod
 ```
 
 ## Client

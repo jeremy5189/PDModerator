@@ -4,8 +4,10 @@ var router = express.Router();
 var config = require('../../common-config.json');
 
 /*
-讓參加者申請上台
-*/
+ * POST /api/attendee
+ * 
+ * 讓參加者申請上台
+ */
 router.post('/attendee', function(req, res, next) {
 
   console.log('GET /api/attendee');
@@ -27,7 +29,7 @@ router.post('/attendee', function(req, res, next) {
     attendee_name: req.body.attendee_name,
     summary: req.body.summary,
     email: req.body.email,
-    gravatar: 'https://www.gravatar.com/avatar/'+md5(req.body.email)+'?s=150',
+    gravatar: 'https://www.gravatar.com/avatar/' + md5(req.body.email) + '?s=150',
     created_at: moment().unix(),
     recognized_at: 0, // To be toggled by moderators
     spoken_at: 0,
@@ -75,42 +77,10 @@ router.post('/attendee', function(req, res, next) {
 });
 
 /*
-  wow Queue!
-*/
-router.get('/queue', function(req, res, next) {
-
-  console.log('GET /api/queue');
-
-  var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
-
-  // Connection URL
-  var url = 'mongodb://localhost:27017/pdmod';
-
-  // Use connect method to connect to the server
-  MongoClient.connect(url, function(err, db) {
-
-    assert.equal(null, err);
-    var collection = db.collection('attendee');
-
-    collection.find({
-      recognized_at: {$gt: 0},
-      spoken_at: 0
-    }).sort({
-      recognized_at: 1,
-      created_at: 1
-    }).toArray(function(err, ret) {
-      console.log('get queue list success');
-      assert.equal(null, err);
-      db.close();
-      res.send(ret);
-    });
-  });
-});
-
-/*
-給 moderate 拿到所有 (removed = false && recognized = false) attendee
-*/
+ * GET /api/attendee (AUTH)
+ * 
+ * 給 moderate 拿到所有 (removed_at = 0 && recognized_at = 0) attendee
+ */
 router.get('/attendee', function(req, res, next) {
 
   console.log('GET /api/attendee');
@@ -140,13 +110,13 @@ router.get('/attendee', function(req, res, next) {
 });
 
 /*
-1. 認可講者
-    - `recognized` = true
-    - `recognized_at` = timestamp
-2. 刪除講者
-    - `removed` = true
-    - `removed_at` = timestamp
-*/
+ * PUT /api/attendee (AUTH)
+ * 
+ * 1. 認可講者
+ *   - `recognized_at` = timestamp
+ * 2. 刪除講者
+ *   - `removed_at` = timestamp
+ */
 router.put('/attendee', function(req, res, next) {
 
   console.log('PUT /api/attendee');
@@ -177,6 +147,40 @@ router.put('/attendee', function(req, res, next) {
       res.send({
         status: ret.result.ok
       });
+    });
+  });
+});
+
+/*
+  wow Queue!
+*/
+router.get('/queue', function(req, res, next) {
+
+  console.log('GET /api/queue');
+
+  var MongoClient = require('mongodb').MongoClient,
+    assert = require('assert');
+
+  // Connection URL
+  var url = 'mongodb://localhost:27017/pdmod';
+
+  // Use connect method to connect to the server
+  MongoClient.connect(url, function(err, db) {
+
+    assert.equal(null, err);
+    var collection = db.collection('attendee');
+
+    collection.find({
+      recognized_at: { $gt: 0 },
+      spoken_at: 0
+    }).sort({
+      recognized_at: 1,
+      created_at: 1
+    }).toArray(function(err, ret) {
+      console.log('get queue list success');
+      assert.equal(null, err);
+      db.close();
+      res.send(ret);
     });
   });
 });
