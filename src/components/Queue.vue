@@ -18,15 +18,15 @@
           <div class="col-12" id="userdata-contain">
             <div class="row">
               <div class="col-4" id="gravatar-contain">
-                <img v-bind:src="attendee_gravatar" alt="">
+                <img v-bind:src="current_speaker.gravatar" alt="">
               </div>
               <div class="col-8" id="username-contain">
-                <h2>{{ attendee_name }}</h2>
+                <h2>{{ current_speaker.attendee_name }}</h2>
               </div>
             </div>
           </div>
           <div class="col-12" id="summary-contain">
-            <h3>{{ summary }}</h3>
+            <h3>{{ current_speaker.summary }}</h3>
           </div>
         </div>
       </div>
@@ -44,45 +44,27 @@
 
         <div class="counter">
           <div class="square">
-            <h3 unselectable="on" class="unselectable square-count">6</h3>
+            <h3 unselectable="on" class="unselectable square-count">
+              {{ queue.count }}
+            </h3>
           </div>
           <h4>等待講者</h4>
         </div>
+
+        <b-button-group id="speaker-control">
+          <b-button variant="default" v-on:click="end_speaker">結束</b-button>
+          <b-button v-on:click="next_speaker">下一位</b-button>
+        </b-button-group>
 
       </div>
     </div>
     <div class="row">
       <div class="col-12" id="queue-contain">
         <div class="row">
-          <div class="col-2 queue-user">
-            <img v-bind:src="attendee_gravatar" alt="">
+          <div class="col-2 queue-user" v-for="obj in queue.list">
+            <img v-bind:src="obj.gravatar" alt="">
             <br>
-            <p>Arbeiter</p>
-          </div>
-          <div class="col-2 queue-user">
-            <img v-bind:src="attendee_gravatar" alt="">
-            <br>
-            <p>Arbeiter</p>
-          </div>
-          <div class="col-2 queue-user">
-            <img v-bind:src="attendee_gravatar" alt="">
-            <br>
-            <p>Arbeiter</p>
-          </div>
-          <div class="col-2 queue-user">
-            <img v-bind:src="attendee_gravatar" alt="">
-            <br>
-            <p>Arbeiter</p>
-          </div>
-          <div class="col-2 queue-user">
-            <img v-bind:src="attendee_gravatar" alt="">
-            <br>
-            <p>Arbeiter</p>
-          </div>
-          <div class="col-2 queue-user">
-            <img v-bind:src="attendee_gravatar" alt="">
-            <br>
-            <p>Arbeiter</p>
+            <p>{{ obj.attendee_name | shortName }}</p>
           </div>
         </div>
       </div>
@@ -95,18 +77,33 @@ export default {
   name: 'queue',
   data() {
     return {
+      title: 'SITCON 論壇',
+      subject: '說明發言規則',
       timer: {
         setting: 3,
         countdown: 3,
         handle: null,
         running: false,
       },
-      title: 'SITCON 論壇',
-      subject: '早安我的社會主義朋友，平安喜樂，認同請分享，另外我是湊字數啦',
-      attendee_gravatar: 'https://www.gravatar.com/avatar/ab28213a16494a32a1f1c896276037eb?s=150',
-      attendee_name: '我是社會主義工人蒸蚌',
-      summary: '洛克的政治哲學對「分配正義」這個議題有多麼重大的意義：它在「自然律」的基礎上，證明了資本主義的私有產權體制，不但不會構成道德不公平，更是保障古典自由主義對道德平等標準的一件事。又，在這樣的脈落下毀滅了',
+      queue: {
+        list: [],
+        count: 0,
+      },
+      holder: {
+        attendee_name: '主持人',
+        gravatar: 'https://www.gravatar.com/avatar/000?s=150',
+        summary: '尚無講者',
+      },
+      current_speaker: {},
     };
+  },
+  created() {
+    // Put holder on
+    this.current_speaker = this.holder;
+    // component created
+    this.$http.get('http://localhost:3000/api/queue').then((response) => {
+      this.queue.list = response.body;
+    });
   },
   methods: {
     timer_click() {
@@ -139,6 +136,7 @@ export default {
       this.timer.countdown = this.timer.setting;
     },
     timer_reconfig() {
+      // eslint-disable-next-line
       let newTime = prompt('Enter countdown time in seconds');
       newTime = parseInt(newTime, 10);
       if (!isNaN(newTime)) {
@@ -146,12 +144,31 @@ export default {
         this.timer_reset();
       }
     },
+    next_speaker() {
+      // Move first speaker in list to current_speaker
+      this.current_speaker = this.queue.list[0];
+      // Remove first one in queue list
+      this.queue.list.shift();
+    },
+    end_speaker() {
+      // call API to end speaker
+    },
+  },
+  filters: {
+    shortName(str) {
+      let ret = str;
+      if (str.length > 10) {
+        ret = `${ret.substr(0, 10)}..`;
+      }
+      return ret;
+    },
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+/* Right hand site circle control */
 .square {
   background-color: lightgray;
   height: 157px;
@@ -167,10 +184,11 @@ export default {
   font-size: 3.5em;
 }
 .counter {
-  margin-top: 2.7em;
+  margin-top: 2.2em;
 }
+/* --------- */
 #timer-contain {
-  padding-top: 1em;
+  padding-top: 0em;
   text-align: center;
   border-left-style: dashed;
   border-left-width: 1px;
@@ -180,6 +198,7 @@ export default {
   font-size: 2.5em;
   cursor: pointer;
 }
+/* --------- */
 .queue-user {
   border-left-style: dashed;
   border-left-width: 1px;
@@ -194,17 +213,18 @@ export default {
   margin-top: 1.4em;
 }
 .queue-user p {
-  font-size: 1.7em;
-  margin-top: 0.5em;
+  font-size: 1.5em;
+  margin-top: 0.4em;
+  line-height: 1;
 }
-
+/* --------- */
 #username-contain {
   padding: 4em 2em 2.5em 0em;
 }
 #username-contain h2 {
   font-size: 2.8em;
 }
-
+/* --------- */
 #summary-contain {
   padding: 0em 1em 2em 3.5em;
   height: 181px;
@@ -214,24 +234,24 @@ export default {
   line-height: 1.4;
   font-size: 1.7em;
 }
-
+/* --------- */
 #gravatar-contain {
   padding: 1.5em 0em 2em 5.3em;
 }
 #gravatar-contain img {
   width: 130.87px;
   border-radius: 50%;
-  border-width: 8.7px;
+  border-width: 3px;
   border-style: solid;
-  border-color: green;
+  border-color: black;
 }
-
+/* --------- */
 #title-contain {
   padding: 1em 0em 1.5em 3.5em;
   border-bottom-style: solid;
   border-bottom-width: 3px;
 }
-
+/* --------- */
 #subject-contain {
   padding-top: 2em;
   padding-left: 3.5em;
@@ -241,7 +261,7 @@ export default {
 #subject-contain h1 {
   line-height: 1.3;
 }
-
+/* --------- */
 #logo {
   height: 45px;
   max-height: 45px;
@@ -258,15 +278,13 @@ export default {
   height: 200px;
   min-height: 200px;
 }
+#speaker-control {
+  margin-top: 1.5em;
+}
 *.unselectable {
    -moz-user-select: -moz-none;
    -khtml-user-select: none;
    -webkit-user-select: none;
-
-   /*
-     Introduced in IE 10.
-     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
-   */
    -ms-user-select: none;
    user-select: none;
 }
