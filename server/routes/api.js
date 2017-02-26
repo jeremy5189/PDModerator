@@ -4,10 +4,28 @@ var router = express.Router();
 var config = require('../../common-config.json');
 
 /*
- * Confirm reCAPTCHA submissions
+ * POST /api/attendee
+ *
+ * 讓參加者申請上台
  */
-function reCAPTCHA_驗證(req, reqres) {
+router.post('/attendee', function(req, res, next) {
+
+  console.log('GET /api/attendee');
+  console.log('g_recaptcha_response: %s', req.body.g_recaptcha_response);
+
+  // Check post body data
+  if (req.body.attendee_name === undefined ||
+    req.body.summary === undefined ||
+    req.body.email === undefined ||
+    req.body.g_recaptcha_response === undefined) {
+      console.log(req.body);
+      console.log('Bad Request');
+      res.status(400).send('Bad Request');
+    }
+
   var request = require('request');
+  var moment = require('moment');
+  var md5 = require('md5');
 
   request.post({
     url: 'https://www.google.com/recaptcha/api/siteverify',
@@ -16,12 +34,10 @@ function reCAPTCHA_驗證(req, reqres) {
       response: req.body.g_recaptcha_response,
       remoteip: req.client.remoteAddress
     }
-  }, function(err, res, body) {
-    var response = JSON.parse(body);
-    if (response.success == 'true' || !(config.reCAPTCHA['enabled'])) {
-      var moment = require('moment');
-      var md5 = require('md5');
-
+  }, function(err, post_res, post_body) {
+    if ((post_res && post_res.statusCode == 200 &&
+      JSON.parse(post_body).success == 'true') ||
+      !(config.reCAPTCHA['enabled'])) {
       var attendee = {
         attendee_name: req.body.attendee_name,
         summary: req.body.summary,
@@ -64,42 +80,19 @@ function reCAPTCHA_驗證(req, reqres) {
           console.log(ret.ops);
 
           // Emit Event to moderate
-          reqres.io.emit('newAttendee', ret.ops[0]);
+          res.io.emit('newAttendee', ret.ops[0]);
 
-          reqres.send({
+          res.send({
             status: ret.result.ok
           });
         });
       });
     } else {
-      console.log(response);
       console.log('Bad reCAPTCHA');
-      reqres.status(418).send('Bad reCAPTCHA, I\'m a teapot!');
+      console.log(post_body);
+      res.status(418).send('Bad reCAPTCHA, I\'m a teapot!');
     }
   });
-}
-
-/*
- * POST /api/attendee
- *
- * 讓參加者申請上台
- */
-router.post('/attendee', function(req, res, next) {
-
-  console.log('GET /api/attendee');
-  console.log('g_recaptcha_response: %s', req.body.g_recaptcha_response);
-
-  // Check post body data
-  if (req.body.attendee_name === undefined ||
-    req.body.summary === undefined ||
-    req.body.email === undefined ||
-    req.body.g_recaptcha_response === undefined) {
-      console.log(req.body);
-      console.log('Bad Request');
-      res.status(400).send('Bad Request');
-    }
-
-  reCAPTCHA_驗證(req, res);
 });
 
 /*
