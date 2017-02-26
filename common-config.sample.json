@@ -1,5 +1,6 @@
 {
   "reCAPTCHA": {
+    "enabled": false,
     "site_key": "",
     "secret": ""
   }

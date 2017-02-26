@@ -4,6 +4,82 @@ var router = express.Router();
 var config = require('../../common-config.json');
 
 /*
+ * Confirm reCAPTCHA submissions
+ */
+function reCAPTCHA_驗證(req, reqres) {
+  var request = require('request');
+
+  request.post({
+    url: 'https://www.google.com/recaptcha/api/siteverify',
+    form: {
+      secret: config.reCAPTCHA['secret'],
+      response: req.body.g_recaptcha_response,
+      remoteip: req.client.remoteAddress
+    }
+  }, function(err, res, body) {
+    var response = JSON.parse(body);
+    if (response.success == 'true' || !(config.reCAPTCHA['enabled'])) {
+      var moment = require('moment');
+      var md5 = require('md5');
+
+      var attendee = {
+        attendee_name: req.body.attendee_name,
+        summary: req.body.summary,
+        email: req.body.email,
+        gravatar: 'https://www.gravatar.com/avatar/' + md5(req.body.email) + '?s=150',
+        created_at: moment().unix(),
+        recognized_at: 0, // To be toggled by moderators
+        spoken_at: 0,
+        removed_at: 0
+      };
+
+      var MongoClient = require('mongodb').MongoClient,
+        assert = require('assert');
+
+      var insertAttendee = function(attendeeObj, db, callback) {
+        // get collection
+        var collection = db.collection('attendee');
+        // insert attendee
+        collection.insertOne(attendeeObj, function(err, ret) {
+          assert.equal(err, null);
+          assert.equal(1, ret.result.n);
+          assert.equal(1, ret.ops.length);
+          callback(ret);
+          db.close();
+        });
+      };
+
+      // Connection URL
+      var url = 'mongodb://localhost:27017/pdmod';
+
+      // Use connect method to connect to the server
+      MongoClient.connect(url, function(err, db) {
+
+        assert.equal(null, err);
+        //console.log("Connected successfully to server");
+
+        insertAttendee(attendee, db, function(ret) {
+
+          console.log('Insert attendee success');
+          console.log(ret.ops);
+
+          // Emit Event to moderate
+          reqres.io.emit('newAttendee', ret.ops[0]);
+
+          reqres.send({
+            status: ret.result.ok
+          });
+        });
+      });
+    } else {
+      console.log(response);
+      console.log('Bad reCAPTCHA');
+      reqres.status(418).send('Bad reCAPTCHA, I\'m a teapot!');
+    }
+  });
+}
+
+/*
  * POST /api/attendee
  *
  * 讓參加者申請上台
@@ -16,64 +92,14 @@ router.post('/attendee', function(req, res, next) {
   // Check post body data
   if (req.body.attendee_name === undefined ||
     req.body.summary === undefined ||
-    req.body.email === undefined) {
-    console.log(req.body);
-    console.log('Bad Request');
-    res.status(400).send('Bad Request');
-  }
+    req.body.email === undefined ||
+    req.body.g_recaptcha_response === undefined) {
+      console.log(req.body);
+      console.log('Bad Request');
+      res.status(400).send('Bad Request');
+    }
 
-  var moment = require('moment');
-  var md5 = require('md5');
-
-  var attendee = {
-    attendee_name: req.body.attendee_name,
-    summary: req.body.summary,
-    email: req.body.email,
-    gravatar: 'https://www.gravatar.com/avatar/' + md5(req.body.email) + '?s=150',
-    created_at: moment().unix(),
-    recognized_at: 0, // To be toggled by moderators
-    spoken_at: 0,
-    removed_at: 0
-  };
-
-  var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
-
-  var insertAttendee = function(attendeeObj, db, callback) {
-    // get collection
-    var collection = db.collection('attendee');
-    // insert attendee
-    collection.insertOne(attendeeObj, function(err, ret) {
-      assert.equal(err, null);
-      assert.equal(1, ret.result.n);
-      assert.equal(1, ret.ops.length);
-      callback(ret);
-      db.close();
-    });
-  };
-
-  // Connection URL
-  var url = 'mongodb://localhost:27017/pdmod';
-
-  // Use connect method to connect to the server
-  MongoClient.connect(url, function(err, db) {
-
-    assert.equal(null, err);
-    //console.log("Connected successfully to server");
-
-    insertAttendee(attendee, db, function(ret) {
-
-      console.log('Insert attendee success');
-      console.log(ret.ops);
-
-      // Emit Event to moderate
-      res.io.emit('newAttendee', ret.ops[0]);
-
-      res.send({
-        status: ret.result.ok
-      });
-    });
-  });
+  reCAPTCHA_驗證(req, res);
 });
 
 /*
@@ -122,17 +148,18 @@ router.get('/attendee', function(req, res, next) {
 ```json
 {
     "recognized": 'true' or 'false',
-    // OR
+// OR
     "removed": 'true' or 'false',
-    // OR
+// OR
     "spoken": 'true' or 'false'
 }
 ```
- */
+*/
 router.put('/attendee/:id', function(req, res, next) {
 
   var moment = require('moment');
   console.log('PUT /api/attendee');
+  console.log(req.body);
 
   var op = req.body;
   if ('recognized' in op) {
@@ -175,120 +202,120 @@ router.put('/attendee/:id', function(req, res, next) {
   });
 });
 
-/*
+  /*
   GET /api/queue
   取得目前進入 Queue 的所有講者
-*/
-router.get('/queue', function(req, res, next) {
+  */
+  router.get('/queue', function(req, res, next) {
 
-  console.log('GET /api/queue');
+    console.log('GET /api/queue');
 
-  var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
+    var MongoClient = require('mongodb').MongoClient,
+      assert = require('assert');
 
-  // Connection URL
-  var url = 'mongodb://localhost:27017/pdmod';
+    // Connection URL
+    var url = 'mongodb://localhost:27017/pdmod';
 
-  // Use connect method to connect to the server
-  MongoClient.connect(url, function(err, db) {
+    // Use connect method to connect to the server
+    MongoClient.connect(url, function(err, db) {
 
-    assert.equal(null, err);
-    var collection = db.collection('attendee');
-
-    collection.find({
-      recognized_at: { $gt: 0 },
-      spoken_at: 0
-    }).sort({
-      recognized_at: 1,
-      created_at: 1
-    }).toArray(function(err, ret) {
-      console.log('get queue list success');
       assert.equal(null, err);
-      db.close();
-      res.send(ret);
-    });
-  });
-});
+      var collection = db.collection('attendee');
 
-/*
- * 取得目前 Subject
-*/
-router.get('/subject', function(req, res, next) {
-
-  console.log('GET /api/subject');
-
-  var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
-
-  // Connection URL
-  var url = 'mongodb://localhost:27017/pdmod';
-
-  // Use connect method to connect to the server
-  MongoClient.connect(url, function(err, db) {
-
-    assert.equal(null, err);
-    var collection = db.collection('subject');
-
-    collection.find({}).sort({
-      'created_at': -1
-    }).limit(1).toArray(function(err, ret) {
-      console.log('get subject success');
-      assert.equal(null, err);
-      db.close();
-      res.send(ret[0].subject);
-    });
-  });
-});
-
-/*
- * 更新 Subject
-*/
-router.post('/subject', function(req, res, next) {
-  var moment = require('moment');
-
-  var subject = {
-    subject: req.body.subject,
-    created_at: moment().unix(),
-  };
-
-  var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
-
-  var insertConfig = function(subject, db, callback) {
-    // get collection
-    var collection = db.collection('subject');
-    // insert attendee
-    collection.insertOne(subject, function(err, ret) {
-      assert.equal(err, null);
-      assert.equal(1, ret.result.n);
-      assert.equal(1, ret.ops.length);
-      callback(ret);
-      db.close();
-    });
-  };
-
-  // Connection URL
-  var url = 'mongodb://localhost:27017/pdmod';
-
-  // Use connect method to connect to the server
-  MongoClient.connect(url, function(err, db) {
-
-    assert.equal(null, err);
-    //console.log("Connected successfully to server");
-
-    insertConfig(subject, db, function(ret) {
-
-      console.log('Insert subject success');
-      console.log(ret.ops);
-
-      // Emit Event
-      // res.io.emit('newAttendee', ret.ops[0]);
-
-      res.send({
-        status: ret.result.ok
+      collection.find({
+        recognized_at: { $gt: 0 },
+        spoken_at: 0
+      }).sort({
+        recognized_at: 1,
+        created_at: 1
+      }).toArray(function(err, ret) {
+        console.log('get queue list success');
+        assert.equal(null, err);
+        db.close();
+        res.send(ret);
       });
     });
   });
-});
 
-module.exports = router;
+  /*
+   * 取得目前 Subject
+   */
+  router.get('/subject', function(req, res, next) {
+
+    console.log('GET /api/subject');
+
+    var MongoClient = require('mongodb').MongoClient,
+      assert = require('assert');
+
+    // Connection URL
+    var url = 'mongodb://localhost:27017/pdmod';
+
+    // Use connect method to connect to the server
+    MongoClient.connect(url, function(err, db) {
+
+      assert.equal(null, err);
+      var collection = db.collection('subject');
+
+      collection.find({}).sort({
+        'created_at': -1
+      }).limit(1).toArray(function(err, ret) {
+        console.log('get subject success');
+        assert.equal(null, err);
+        db.close();
+        res.send(ret[0].subject);
+      });
+    });
+  });
+
+  /*
+   * 更新 Subject
+   */
+  router.post('/subject', function(req, res, next) {
+    var moment = require('moment');
+
+    var subject = {
+      subject: req.body.subject,
+      created_at: moment().unix(),
+    };
+
+    var MongoClient = require('mongodb').MongoClient,
+      assert = require('assert');
+
+    var insertConfig = function(subject, db, callback) {
+      // get collection
+      var collection = db.collection('subject');
+      // insert attendee
+      collection.insertOne(subject, function(err, ret) {
+        assert.equal(err, null);
+        assert.equal(1, ret.result.n);
+        assert.equal(1, ret.ops.length);
+        callback(ret);
+        db.close();
+      });
+    };
+
+    // Connection URL
+    var url = 'mongodb://localhost:27017/pdmod';
+
+    // Use connect method to connect to the server
+    MongoClient.connect(url, function(err, db) {
+
+      assert.equal(null, err);
+      //console.log("Connected successfully to server");
+
+      insertConfig(subject, db, function(ret) {
+
+        console.log('Insert subject success');
+        console.log(ret.ops);
+
+        // Emit Event
+        // res.io.emit('newAttendee', ret.ops[0]);
+
+        res.send({
+          status: ret.result.ok
+        });
+      });
+    });
+  });
+
+  module.exports = router;
