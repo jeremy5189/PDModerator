@@ -3,5 +3,6 @@
     "enabled": false,
     "site_key": "",
     "secret": ""
-  }
+  },
+  "ws_url": "http://172.20.10.4:3000"
 }
