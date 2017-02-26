@@ -36,7 +36,7 @@ router.post('/attendee', function(req, res, next) {
     }
   }, function(err, post_res, post_body) {
     if ((post_res && post_res.statusCode == 200 &&
-      JSON.parse(post_body).success == 'true') ||
+      JSON.parse(post_body).success == true) ||
       !(config.reCAPTCHA['enabled'])) {
       var attendee = {
         attendee_name: req.body.attendee_name,
@@ -224,6 +224,7 @@ router.get('/queue', function(req, res, next) {
 
     collection.find({
       recognized_at: { $gt: 0 },
+      removed_at: 0,
       spoken_at: 0
     }).sort({
       recognized_at: 1,
