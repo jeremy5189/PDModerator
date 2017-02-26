@@ -210,4 +210,79 @@ router.get('/queue', function(req, res, next) {
   });
 });
 
+router.get('/subject', function(req, res, next) {
+
+  console.log('GET /api/subject');
+
+  var MongoClient = require('mongodb').MongoClient,
+    assert = require('assert');
+
+  // Connection URL
+  var url = 'mongodb://localhost:27017/pdmod';
+
+  // Use connect method to connect to the server
+  MongoClient.connect(url, function(err, db) {
+
+    assert.equal(null, err);
+    var collection = db.collection('subject');
+
+    // TODO: get latest
+    collection.find({}).toArray(function(err, ret) {
+      console.log('get subject success');
+      assert.equal(null, err);
+      db.close();
+      res.send(ret);
+    });
+  });
+});
+
+router.post('/subject', function(req, res, next) {
+
+  var moment = require('moment');
+
+  var subject = {
+    subject: req.body.subject,
+    created_at: moment().unix(),
+  };
+
+  var MongoClient = require('mongodb').MongoClient,
+    assert = require('assert');
+
+  var insertConfig = function(subject, db, callback) {
+    // get collection
+    var collection = db.collection('subject');
+    // insert attendee
+    collection.insertOne(subject, function(err, ret) {
+      assert.equal(err, null);
+      assert.equal(1, ret.result.n);
+      assert.equal(1, ret.ops.length);
+      callback(ret);
+      db.close();
+    });
+  };
+
+  // Connection URL
+  var url = 'mongodb://localhost:27017/pdmod';
+
+  // Use connect method to connect to the server
+  MongoClient.connect(url, function(err, db) {
+
+    assert.equal(null, err);
+    //console.log("Connected successfully to server");
+
+    insertConfig(subject, db, function(ret) {
+
+      console.log('Insert subject success');
+      console.log(ret.ops);
+
+      // Emit Event
+      // res.io.emit('newAttendee', ret.ops[0]);
+
+      res.send({
+        status: ret.result.ok
+      });
+    });
+  });
+});
+
 module.exports = router;
