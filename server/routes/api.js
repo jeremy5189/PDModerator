@@ -11,7 +11,7 @@ var config = require('../../common-config.json');
 router.post('/attendee', function(req, res, next) {
 
   console.log('GET /api/attendee');
-  //console.log('g_recaptcha_response: %s'. req.body.g_recaptcha_response);
+  console.log('g_recaptcha_response: %s', req.body.g_recaptcha_response);
 
   // Check post body data
   if (req.body.attendee_name === undefined ||
