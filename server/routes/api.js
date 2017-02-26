@@ -210,6 +210,9 @@ router.get('/queue', function(req, res, next) {
   });
 });
 
+/*
+ * 取得目前 Subject
+*/
 router.get('/subject', function(req, res, next) {
 
   console.log('GET /api/subject');
@@ -226,18 +229,21 @@ router.get('/subject', function(req, res, next) {
     assert.equal(null, err);
     var collection = db.collection('subject');
 
-    // TODO: get latest
-    collection.find({}).toArray(function(err, ret) {
+    collection.find({}).sort({
+      'created_at': -1
+    }).limit(1).toArray(function(err, ret) {
       console.log('get subject success');
       assert.equal(null, err);
       db.close();
-      res.send(ret);
+      res.send(ret[0].subject);
     });
   });
 });
 
+/*
+ * 更新 Subject
+*/
 router.post('/subject', function(req, res, next) {
-
   var moment = require('moment');
 
   var subject = {
