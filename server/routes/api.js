@@ -42,7 +42,7 @@ router.post('/attendee', function(req, res, next) {
         attendee_name: req.body.attendee_name,
         summary: req.body.summary,
         email: req.body.email,
-        gravatar: 'https://www.gravatar.com/avatar/' + md5(req.body.email) + '?s=150',
+        gravatar: `https://www.gravatar.com/avatar/${md5(req.body.email)}`,
         created_at: moment().unix(),
         recognized_at: 0, // To be toggled by moderators
         spoken_at: 0,
