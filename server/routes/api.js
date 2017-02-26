@@ -5,7 +5,7 @@ var config = require('../../common-config.json');
 
 /*
  * POST /api/attendee
- * 
+ *
  * 讓參加者申請上台
  */
 router.post('/attendee', function(req, res, next) {
@@ -78,7 +78,7 @@ router.post('/attendee', function(req, res, next) {
 
 /*
  * GET /api/attendee (AUTH)
- * 
+ *
  * 給 moderate 拿到所有 (removed_at = 0 && recognized_at = 0) attendee
  */
 router.get('/attendee', function(req, res, next) {
@@ -110,18 +110,42 @@ router.get('/attendee', function(req, res, next) {
 });
 
 /*
- * PUT /api/attendee (AUTH)
- * 
- * 1. 認可講者
- *   - `recognized_at` = timestamp
- * 2. 刪除講者
- *   - `removed_at` = timestamp
- */
-router.put('/attendee', function(req, res, next) {
+ * PUT /api/attendee/{_id} (AUTH)
 
+1. 認可講者
+    - `recognized` = boolean
+2. 刪除講者
+    - `removed` = boolean
+3. 更新講者講完
+    - `spoken` = boolean
+
+```json
+{
+    "recognized": 'true' or 'false',
+    // OR
+    "removed": 'true' or 'false',
+    // OR
+    "spoken": 'true' or 'false'
+}
+```
+ */
+router.put('/attendee/:id', function(req, res, next) {
+
+  var moment = require('moment');
   console.log('PUT /api/attendee');
 
-  var payload = JSON.parse(req.body.payload);
+  var op = req.body;
+  if ('recognized' in op) {
+    var payload = {'recognized_at': (op['recognized'] == 'true' ? moment().unix() : 0)};
+  } else if ('removed' in op) {
+    var payload = {'removed_at': (op['removed'] == 'true' ? moment().unix() : 0)};
+  } else if ('spoken' in op) {
+    var payload = {'spoken_at': (op['spoken'] == 'true' ? moment().unix() : 0)};
+  } else {
+    console.log(req.body);
+    console.log('Bad Request');
+    res.status(400).send('Bad Request');
+  }
 
   var MongoClient = require('mongodb').MongoClient,
     assert = require('assert');
@@ -136,7 +160,7 @@ router.put('/attendee', function(req, res, next) {
     var collection = db.collection('attendee');
 
     collection.updateOne({
-      _id: ObjectID(req.body._id)
+      _id: ObjectID(req.params.id)
     }, {
       $set: payload
     }, function(err, ret) {
@@ -152,7 +176,8 @@ router.put('/attendee', function(req, res, next) {
 });
 
 /*
-  wow Queue!
+  GET /api/queue
+  取得目前進入 Queue 的所有講者
 */
 router.get('/queue', function(req, res, next) {
 
