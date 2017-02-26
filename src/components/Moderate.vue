@@ -20,7 +20,7 @@
         <tbody>
           <tr v-for="attendee in unprocessed_attendee">
             <td>
-              <img v-bind:title="attendee.email" v-bind:src="attendee.gravatar | gravatarSize" alt="">
+              <div v-bind:title="attendee.email" v-bind:style="{ backgroundImage: 'url(' + gravatarSize(attendee.gravatar) + ')' }" alt="" class="avatar">
             </td>
             <td>{{ attendee.attendee_name }}</td>
             <td>{{ attendee.created_at }}</td>
@@ -70,7 +70,7 @@
         <tbody>
           <tr v-for="attendee in queue_list">
             <td>
-              <img v-bind:title="attendee.email" v-bind:src="attendee.gravatar | gravatarSize" alt="">
+              <div v-bind:title="attendee.email" v-bind:src="attendee.gravatar | gravatarSize" alt="">
             </td>
             <td>{{ attendee.attendee_name }}</td>
             <td>
@@ -105,11 +105,6 @@ export default {
       change_to_subject: '',
     };
   },
-  filters: {
-    gravatarSize(url) {
-      return `${url}?s=35`;
-    },
-  },
   sockets: {
     connect() {
       console.log('socket connected');
@@ -123,6 +118,9 @@ export default {
     },
   },
   methods: {
+    gravatarSize(url) {
+      return `${url}?s=35`;
+    },
     updateSubject() {
       this.$http.get('http://localhost:3000/api/subject', {}).then((resp) => {
         this.current_subject = resp.body;
@@ -203,6 +201,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.avatar {
+  width: 35px;
+  height: 35px;
+}
 .breadcrumb {
   margin-top: 1em;
 }

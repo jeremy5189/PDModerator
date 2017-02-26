@@ -36,7 +36,7 @@ router.post('/attendee', function(req, res, next) {
     }
   }, function(err, post_res, post_body) {
     if ((post_res && post_res.statusCode == 200 &&
-        JSON.parse(post_body).success == 'true') ||
+      JSON.parse(post_body).success == 'true') ||
       !(config.reCAPTCHA['enabled'])) {
       var attendee = {
         attendee_name: req.body.attendee_name,
@@ -208,7 +208,6 @@ router.put('/attendee/:id', function(req, res, next) {
   取得目前進入 Queue 的所有講者
  */
 router.get('/queue', function(req, res, next) {
-
   console.log('GET /api/queue');
 
   var MongoClient = require('mongodb').MongoClient,
