@@ -52,7 +52,7 @@
         </div>
 
         <b-button-group id="speaker-control">
-          <b-button variant="default" v-on:click="end_speaker">結束</b-button>
+          <b-button :variant="end_btn_class" v-on:click="end_speaker">結束</b-button>
           <b-button v-on:click="next_speaker">下一位</b-button>
         </b-button-group>
 
@@ -61,8 +61,8 @@
     <div class="row">
       <div class="col-12" id="queue-contain">
         <div class="row">
-          <div class="col-2 queue-user" v-for="obj in queue.list">
-            <img v-bind:src="obj.gravatar" alt="">
+          <div class="col-2 queue-user" v-for="obj in limitQueue">
+            <img v-bind:src="obj.gravatar" alt=" ">
             <br>
             <p>{{ obj.attendee_name | shortName }}</p>
           </div>
@@ -73,6 +73,7 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
 export default {
   name: 'queue',
   data() {
@@ -95,17 +96,22 @@ export default {
         summary: '尚無講者',
       },
       current_speaker: {},
+      end_btn_class: 'default',
     };
   },
   created() {
     // Put holder on
     this.current_speaker = this.holder;
     // component created
-    this.$http.get('http://localhost:3000/api/queue').then((response) => {
-      this.queue.list = response.body;
-    });
+    this.updateQueue();
+    this.updateSubject();
   },
   methods: {
+    updateSubject() {
+      this.$http.get('http://localhost:3000/api/subject', {}).then((resp) => {
+        this.subject = resp.body;
+      });
+    },
     timer_click() {
       if (this.timer.countdown > 0 && !this.timer.running) {
         // Pausing, will resume
@@ -146,12 +152,53 @@ export default {
     },
     next_speaker() {
       // Move first speaker in list to current_speaker
-      this.current_speaker = this.queue.list[0];
-      // Remove first one in queue list
-      this.queue.list.shift();
+      if (this.queue.list.length > 0) {
+        this.current_speaker = this.queue.list[0];
+        // Remove first one in queue list
+        this.queue.list.shift();
+        this.queue.count = this.queue.list.length;
+      }
     },
     end_speaker() {
       // call API to end speaker
+      if (this.current_speaker.attendee_name !== this.holder.attendee_name) {
+        // Not holder is attendee
+        // eslint-disable-next-line
+        this.$http.put(`http://localhost:3000/api/attendee/${this.current_speaker._id}`, {
+          spoken: 'true',
+        }).then((resp) => {
+          console.log(resp.body);
+          if (resp.body.status === 1) {
+            this.end_btn_class = 'success';
+          } else {
+            this.end_btn_class = 'danger';
+          }
+        }).then(() => {
+          this.end_btn_class = 'danger';
+        });
+        setTimeout(() => {
+          this.end_btn_class = 'default';
+        }, 3000);
+      }
+    },
+    updateQueue() {
+      this.$http.get('http://localhost:3000/api/queue').then((response) => {
+        this.queue.list = response.body;
+        this.queue.count = this.queue.list.length;
+      });
+    },
+  },
+  sockets: {
+    connect() {
+      console.log('socket connected');
+    },
+    recognized(val) {
+      console.log('ws: recognized');
+      console.log(val);
+      this.updateQueue();
+    },
+    subjectChange() {
+      this.updateSubject();
     },
   },
   filters: {
@@ -163,10 +210,15 @@ export default {
       return ret;
     },
   },
+  computed: {
+    limitQueue() {
+      return this.queue.list.slice(0, 6);
+    },
+  },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add "scoped " attribute to limit CSS to this component only -->
 <style scoped>
 /* Right hand site circle control */
 .square {

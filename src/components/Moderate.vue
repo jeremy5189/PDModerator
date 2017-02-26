@@ -107,7 +107,7 @@ export default {
   },
   filters: {
     gravatarSize(url) {
-      return url.replace('s=150', 's=35');
+      return `${url}?s=35`;
     },
   },
   sockets: {
@@ -117,6 +117,9 @@ export default {
     newAttendee(obj) {
       console.log('ws: newAttendee');
       this.unprocessed_attendee.push(obj);
+    },
+    spoken() {
+      this.updateQueue();
     },
   },
   methods: {
@@ -149,6 +152,7 @@ export default {
             // eslint-disable-next-line
             return obj._id !== _id;
           });
+          this.unprocessed_attendee_count = this.unprocessed_attendee.length;
           this.updateQueue();
         }
       });
@@ -163,6 +167,7 @@ export default {
             // eslint-disable-next-line
             return obj._id !== _id;
           });
+          this.unprocessed_attendee_count = this.unprocessed_attendee.length;
         }
       });
     },
