@@ -74,6 +74,8 @@
 
 <script>
 /* eslint-disable no-console */
+import config from '../../common-config.json';
+
 export default {
   name: 'queue',
   data() {
@@ -108,7 +110,7 @@ export default {
   },
   methods: {
     updateSubject() {
-      this.$http.get('http://localhost:3000/api/subject', {}).then((resp) => {
+      this.$http.get(`${config.api_url}/api/subject`, {}).then((resp) => {
         this.subject = resp.body;
       });
     },
@@ -164,7 +166,7 @@ export default {
       if (this.current_speaker.attendee_name !== this.holder.attendee_name) {
         // Not holder is attendee
         // eslint-disable-next-line
-        this.$http.put(`http://localhost:3000/api/attendee/${this.current_speaker._id}`, {
+        this.$http.put(`${config.api_url}/api/attendee/${this.current_speaker._id}`, {
           spoken: 'true',
         }).then((resp) => {
           console.log(resp.body);
@@ -182,7 +184,7 @@ export default {
       }
     },
     updateQueue() {
-      this.$http.get('http://localhost:3000/api/queue').then((response) => {
+      this.$http.get(`${config.api_url}/api/queue`).then((response) => {
         this.queue.list = response.body;
         this.queue.count = this.queue.list.length;
       });

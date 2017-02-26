@@ -48,6 +48,7 @@ selenium-debug.log
 .vscode
 
 # Build to server public
-server/public
+server/public/static
+server/public/index.html
 
 common-config.json

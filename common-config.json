@@ -4,5 +4,6 @@
     "site_key": "6LfanRYUAAAAAPL2JK96iI3Y7WeLsq1FxuG54zBG",
     "secret": "6LfanRYUAAAAAMxHAJN6_bHp57HuvS-SCLhu-ymX"
   },
-  "ws_url": "http://172.20.10.4:3000"
+  "ws_url": "http://172.20.10.4:3000",
+  "api_url": "http://172.20.10.4:3000"
 }

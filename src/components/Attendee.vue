@@ -47,6 +47,7 @@
 
 <script>
 import VueRecaptcha from 'vue-recaptcha';
+import config from '../../common-config.json';
 
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
@@ -77,7 +78,7 @@ const attendee = {
     click() {
       if (this.g_recaptcha_response !== null) {
         this.alert.danger = false;
-        this.$http.post('http://localhost:3000/api/attendee', {
+        this.$http.post(`${config.api_url}/api/attendee`, {
           attendee_name: this.attendee_name,
           email: this.email,
           summary: this.summary,

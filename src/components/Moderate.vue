@@ -87,6 +87,8 @@
 
 <script>
 /* eslint-disable no-console */
+import config from '../../common-config.json';
+
 export default {
   name: 'moderate',
   created() {
@@ -124,12 +126,12 @@ export default {
   },
   methods: {
     updateSubject() {
-      this.$http.get('http://localhost:3000/api/subject', {}).then((resp) => {
+      this.$http.get(`${config.api_url}/api/subject`, {}).then((resp) => {
         this.current_subject = resp.body;
       });
     },
     changeSubject() {
-      this.$http.post('http://localhost:3000/api/subject', {
+      this.$http.post(`${config.api_url}/api/subject`, {
         subject: this.change_to_subject,
       }).then((resp) => {
         if (resp.body.status) {
@@ -143,7 +145,7 @@ export default {
       });
     },
     recognizeSpeaker(_id) {
-      this.$http.put(`http://localhost:3000/api/attendee/${_id}`, {
+      this.$http.put(`${config.api_url}/api/attendee/${_id}`, {
         recognized: 'true',
       }).then((resp) => {
         if (resp.body.status) {
@@ -158,7 +160,7 @@ export default {
       });
     },
     removeSpeaker(_id) {
-      this.$http.put(`http://localhost:3000/api/attendee/${_id}`, {
+      this.$http.put(`${config.api_url}/api/attendee/${_id}`, {
         removed: 'true',
       }).then((resp) => {
         if (resp.body.status) {
@@ -172,7 +174,7 @@ export default {
       });
     },
     putBack(_id) {
-      this.$http.put(`http://localhost:3000/api/attendee/${_id}`, {
+      this.$http.put(`${config.api_url}/api/attendee/${_id}`, {
         recognized: 'false',
       }).then((resp) => {
         if (resp.body.status) {
@@ -186,13 +188,13 @@ export default {
       });
     },
     updateQueue() {
-      this.$http.get('http://localhost:3000/api/queue').then((response) => {
+      this.$http.get(`${config.api_url}/api/queue`).then((response) => {
         this.queue_list = response.body;
         this.queue_count = this.queue_list.length;
       });
     },
     updateUnprocessedAttendee() {
-      this.$http.get('http://localhost:3000/api/attendee').then((response) => {
+      this.$http.get(`${config.api_url}/api/attendee`).then((response) => {
         this.unprocessed_attendee = response.body;
         this.unprocessed_attendee_count = this.unprocessed_attendee.length;
       });

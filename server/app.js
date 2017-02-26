@@ -6,10 +6,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 // Set up routes
-var index = require('./routes/index');
-var attendee = require('./routes/attendee');
-var moderate = require('./routes/moderate');
-var queue = require('./routes/queue');
 var api = require('./routes/api');
 
 // Set up express and socket.io
@@ -44,10 +40,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-app.use('/attendee', attendee);
-app.use('/moderate', moderate);
-app.use('/queue', queue);
 app.use('/api', api);
 
 // catch 404 and forward to error handler
