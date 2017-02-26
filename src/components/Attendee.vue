@@ -23,7 +23,6 @@
         <a src="https://zh-tw.gravatar.com/">Gravatar</a>）
       </label>
 
-
       <textarea v-model="summary" maxlength="100" name="summary" id="summary" class="form-control input" rows="5" placeholder="Enter your speaking summary"></textarea>
       <label for="summary">
         請輸入您的發言概要，至多不超過 100 個字元 (選填，會顯示於台上)

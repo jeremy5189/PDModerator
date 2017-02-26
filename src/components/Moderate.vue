@@ -140,7 +140,7 @@ export default {
         } else {
           console.info('Change subject fail');
         }
-      }).then(() => {
+      }, () => {
         console.error('API error');
       });
     },
@@ -183,6 +183,7 @@ export default {
             // eslint-disable-next-line
             return obj._id !== _id;
           });
+          this.queue_count = this.queue_list.length;
           this.updateUnprocessedAttendee();
         }
       });

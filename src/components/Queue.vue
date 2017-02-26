@@ -53,7 +53,7 @@
 
         <b-button-group id="speaker-control">
           <b-button :variant="end_btn_class" v-on:click="end_speaker">結束</b-button>
-          <b-button v-on:click="next_speaker">下一位</b-button>
+          <b-button v-on:click="next_speaker" :disabled="next_disabled">下一位</b-button>
         </b-button-group>
 
       </div>
@@ -99,6 +99,7 @@ export default {
       },
       current_speaker: {},
       end_btn_class: 'default',
+      next_disabled: false,
     };
   },
   created() {
@@ -159,6 +160,7 @@ export default {
         // Remove first one in queue list
         this.queue.list.shift();
         this.queue.count = this.queue.list.length;
+        this.next_disabled = true;
       }
     },
     end_speaker() {
@@ -169,13 +171,16 @@ export default {
         this.$http.put(`${config.api_url}/api/attendee/${this.current_speaker._id}`, {
           spoken: 'true',
         }).then((resp) => {
-          console.log(resp.body);
           if (resp.body.status === 1) {
             this.end_btn_class = 'success';
+            this.next_disabled = null;
+            // Put holder on
+            this.current_speaker = this.holder;
           } else {
             this.end_btn_class = 'danger';
           }
-        }).then(() => {
+        }, () => {
+          // error callback
           this.end_btn_class = 'danger';
         });
         setTimeout(() => {
