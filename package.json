@@ -30,6 +30,7 @@
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.7.3",
     "vue": "^2.1.10",
+    "vue-moment": "^2.0.2",
     "vue-recaptcha": "^0.3.2",
     "vue-resource": "^1.2.0",
     "vue-router": "^2.2.1",

@@ -18,7 +18,7 @@
           <div class="col-12" id="userdata-contain">
             <div class="row">
               <div class="col-4" id="gravatar-contain">
-                <img v-bind:src="current_speaker.gravatar" alt="">
+                <div v-bind:title="current_speaker.email" v-bind:style="{ backgroundImage: 'url(' + gravatarSize(current_speaker.gravatar) + ')' }" alt=""></div>
               </div>
               <div class="col-8" id="username-contain">
                 <h2>{{ current_speaker.attendee_name }}</h2>
@@ -62,8 +62,7 @@
       <div class="col-12" id="queue-contain">
         <div class="row">
           <div class="col-2 queue-user" v-for="obj in limitQueue">
-            <img v-bind:src="obj.gravatar" alt=" ">
-            <br>
+            <div><div v-bind:title="obj.email" v-bind:style="{ backgroundImage: 'url(' + gravatarSize(obj.gravatar) + ')' }" alt=""></div></div>
             <p>{{ obj.attendee_name | shortName }}</p>
           </div>
         </div>
@@ -94,7 +93,7 @@ export default {
       },
       holder: {
         attendee_name: '主持人',
-        gravatar: 'https://www.gravatar.com/avatar/000?s=150',
+        gravatar: 'https://www.gravatar.com/avatar/000?s=131',
         summary: '尚無講者',
       },
       current_speaker: {},
@@ -110,6 +109,9 @@ export default {
     this.updateSubject();
   },
   methods: {
+    gravatarSize(url) {
+      return `${url}?s=131`;
+    },
     updateSubject() {
       this.$http.get(`${config.api_url}/api/subject`, {}).then((resp) => {
         this.subject = resp.body;
@@ -259,6 +261,7 @@ export default {
 }
 /* --------- */
 .queue-user {
+  width: 100%;
   border-left-style: dashed;
   border-left-width: 1px;
   text-align: center;
@@ -266,10 +269,23 @@ export default {
 .queue-user:first-of-type {
   border-left-style: none;
 }
-.queue-user img {
-  border-radius: 50%;
-  width: 60px;
+.queue-user div {
+  width: 100%;
   margin-top: 1.4em;
+  padding-bottom: 0.5em;
+}
+.queue-user div div {
+  width: 60px;
+  height: 60px;
+  text-align: justify;
+  margin: 0 auto;
+  border-radius: 50%;
+  border-width: 2px;
+  border-style: solid;
+  border-color: black;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 .queue-user p {
   font-size: 1.5em;
@@ -297,12 +313,16 @@ export default {
 #gravatar-contain {
   padding: 1.5em 0em 2em 5.3em;
 }
-#gravatar-contain img {
+#gravatar-contain div {
   width: 130.87px;
+  height: 130.87px;
   border-radius: 50%;
   border-width: 3px;
   border-style: solid;
   border-color: black;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 /* --------- */
 #title-contain {

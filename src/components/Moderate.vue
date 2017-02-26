@@ -70,7 +70,7 @@
         <tbody>
           <tr v-for="attendee in queue_list">
             <td>
-              <div v-bind:title="attendee.email" v-bind:src="attendee.gravatar | gravatarSize" alt="">
+              <div v-bind:title="attendee.email" v-bind:style="{ backgroundImage: 'url(' + gravatarSize(attendee.gravatar) + ')' }" alt="" class="avatar">
             </td>
             <td>{{ attendee.attendee_name }}</td>
             <td>
