@@ -47,6 +47,7 @@
 
 <script>
 import VueRecaptcha from 'vue-recaptcha';
+
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
 const attendee = {

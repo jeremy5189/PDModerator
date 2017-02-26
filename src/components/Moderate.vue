@@ -27,8 +27,8 @@
             <td>{{ attendee.summary }}</td>
             <td>
               <b-button-group>
-                <b-button>+</b-button>
-                <b-button variant="default">-</b-button>
+                <b-button v-on:click="recognizeSpeaker(attendee._id)">+</b-button>
+                <b-button v-on:click="removeSpeaker(attendee._id)" variant="danger">-</b-button>
               </b-button-group>
             </td>
           </tr>
@@ -46,9 +46,9 @@
       <b-form>
         <span class="badge badge-primary">目前主題</span>
         <label>{{ current_subject }}</label>
-        <b-form-input></b-form-input>
+        <b-form-input v-model="change_to_subject"></b-form-input>
         <div class="right-wrap">
-          <b-button size="sm" class="pull-right" id="change-subject">變更主題</b-button>
+          <b-button v-on:click="changeSubject" type="button" size="sm" class="pull-right" id="change-subject">變更主題</b-button>
         </div>
       </b-form>
 
@@ -64,7 +64,7 @@
           <tr>
             <th>#</th>
             <th>Name</th>
-            <th>Remove</th>
+            <th>Put back</th>
           </tr>
         </thead>
         <tbody>
@@ -74,8 +74,8 @@
             </td>
             <td>{{ attendee.attendee_name }}</td>
             <td>
-              <b-button variant="danger">
-                -
+              <b-button variant="warning" v-on:click="putBack(attendee._id)">
+                &lt;-
               </b-button>
             </td>
           </tr>
@@ -86,17 +86,13 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
 export default {
   name: 'moderate',
   created() {
-    this.$http.get('http://localhost:3000/api/attendee').then((response) => {
-      this.unprocessed_attendee = response.body;
-      this.unprocessed_attendee_count = this.unprocessed_attendee.length;
-    });
-    this.$http.get('http://localhost:3000/api/queue').then((response) => {
-      this.queue_list = response.body;
-      this.queue_count = this.queue_list.length;
-    });
+    this.updateUnprocessedAttendee();
+    this.updateQueue();
+    this.updateSubject();
   },
   data() {
     return {
@@ -106,6 +102,7 @@ export default {
       queue_list: [],
       queue_count: 0,
       current_subject: 'Loading...',
+      change_to_subject: '',
     };
   },
   filters: {
@@ -120,6 +117,80 @@ export default {
     newAttendee(obj) {
       console.log('ws: newAttendee');
       this.unprocessed_attendee.push(obj);
+    },
+  },
+  methods: {
+    updateSubject() {
+      this.$http.get('http://localhost:3000/api/subject', {}).then((resp) => {
+        this.current_subject = resp.body;
+      });
+    },
+    changeSubject() {
+      this.$http.post('http://localhost:3000/api/subject', {
+        subject: this.change_to_subject,
+      }).then((resp) => {
+        if (resp.body.status) {
+          console.info('Change subject success');
+          this.current_subject = this.change_to_subject;
+        } else {
+          console.info('Change subject fail');
+        }
+      }).then(() => {
+        console.error('API error');
+      });
+    },
+    recognizeSpeaker(_id) {
+      this.$http.put(`http://localhost:3000/api/attendee/${_id}`, {
+        recognized: 'true',
+      }).then((resp) => {
+        if (resp.body.status) {
+          // eslint-disable-next-line
+          this.unprocessed_attendee = this.unprocessed_attendee.filter((obj) => {
+            // eslint-disable-next-line
+            return obj._id !== _id;
+          });
+          this.updateQueue();
+        }
+      });
+    },
+    removeSpeaker(_id) {
+      this.$http.put(`http://localhost:3000/api/attendee/${_id}`, {
+        removed: 'true',
+      }).then((resp) => {
+        if (resp.body.status) {
+          // eslint-disable-next-line
+          this.unprocessed_attendee = this.unprocessed_attendee.filter((obj) => {
+            // eslint-disable-next-line
+            return obj._id !== _id;
+          });
+        }
+      });
+    },
+    putBack(_id) {
+      this.$http.put(`http://localhost:3000/api/attendee/${_id}`, {
+        recognized: 'false',
+      }).then((resp) => {
+        if (resp.body.status) {
+          // eslint-disable-next-line
+          this.queue_list = this.queue_list.filter((obj) => {
+            // eslint-disable-next-line
+            return obj._id !== _id;
+          });
+          this.updateUnprocessedAttendee();
+        }
+      });
+    },
+    updateQueue() {
+      this.$http.get('http://localhost:3000/api/queue').then((response) => {
+        this.queue_list = response.body;
+        this.queue_count = this.queue_list.length;
+      });
+    },
+    updateUnprocessedAttendee() {
+      this.$http.get('http://localhost:3000/api/attendee').then((response) => {
+        this.unprocessed_attendee = response.body;
+        this.unprocessed_attendee_count = this.unprocessed_attendee.length;
+      });
     },
   },
 };
