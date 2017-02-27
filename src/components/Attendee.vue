@@ -1,7 +1,7 @@
 <template>
   <div class="row">
-    <div class="col-2"></div>
-    <div class="col-8">
+    <div class="col-1"></div>
+    <div class="col-10">
 
       <h2>{{ title }}</h2>
       <b-alert v-if="alert.success" :show="true" state="success" dismissible>
@@ -40,7 +40,7 @@
       </div>
 
     </div>
-    <div class="col-2"></div>
+    <div class="col-1"></div>
   </div>
 </template>
 
@@ -128,6 +128,7 @@ export default attendee;
 #submit {
   margin: 0 auto;
   margin-top: 1.5em;
+  margin-bottom: 6em;
 }
 h2 {
   margin-top: 2em;
