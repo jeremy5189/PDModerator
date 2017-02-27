@@ -42,7 +42,7 @@
           系統訊息 <b-badge :variant="system.status">{{ system.message }}</b-badge>
         </li>
       </ol>
-      <textarea id="system_message" rows="3" class="form-control" readonly>{{ system.display_message }}</textarea>
+      <textarea id="system_message" class="form-control" readonly>{{ system.display_message }}</textarea>
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
           變更主題
@@ -108,7 +108,7 @@ export default {
       system: {
         status: 'default',
         message: 'WS loading...',
-        display_message: '',
+        display_message: '<PDModerator Output>',
       },
     };
   },
@@ -171,9 +171,10 @@ export default {
   },
   methods: {
     appendDispMsg(msg) {
-      this.system.display_message += `${msg}\n`;
+      const time = Moment().format('hh:mm:ss');
+      this.system.display_message += `\n${time}: ${msg}`;
       const textarea = document.getElementById('system_message');
-      textarea.scrollTop = textarea.scrollHeight;
+      textarea.scrollTop = textarea.scrollHeight - textarea.clientHeight;
     },
     vueResErrorHandler(resp) {
       if (resp.statusText === '') {
@@ -294,6 +295,8 @@ export default {
 }
 #system_message {
   background-color: white;
+  font-size: 10px;
+  height: 80px;
 }
 #summary-th {
   width: 326px;
