@@ -171,6 +171,8 @@ export default {
       // call API to end speaker
       if (this.current_speaker.attendee_name !== this.holder.attendee_name) {
         // Not holder is attendee
+        // Pause timer at once
+        this.timer_pause();
         // eslint-disable-next-line
         this.$http.put(`${config.api_url}/api/attendee/${this.current_speaker._id}`, {
           spoken: 'true',
@@ -180,6 +182,8 @@ export default {
             this.next_disabled = null;
             // Put holder on
             this.current_speaker = this.holder;
+            // Reset timer
+            this.timer_reset();
           } else {
             this.end_btn_class = 'danger';
           }
@@ -208,8 +212,9 @@ export default {
       console.log(val);
       this.updateQueue();
     },
-    subjectChange() {
-      this.updateSubject();
+    subjectChange(val) {
+      // Listen event from another Moderate page
+      this.subject = val;
     },
   },
   filters: {
