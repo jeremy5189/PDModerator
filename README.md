@@ -2,24 +2,32 @@
 
 Panel Discussion Moderator for SITCON
 
-## Dev documents
-[https://hackmd.io/JzAmBYAYHYCMEYC0AzArAJgMyPNAHEntKNIgMbQCGqlEAbKgKbThA===?both](https://hackmd.io/JzAmBYAYHYCMEYC0AzArAJgMyPNAHEntKNIgMbQCGqlEAbKgKbThA===?both)
+## Requirements
 
-## Server
+- node.js >= 4.0.0
+- npm >= 3.0.0
+- MongoDB
 
-``` bash
-# Start express server at ./server/bin/www
-npm run start
+## Install
 
-# Start nodemon
-npm run mod
+```bash
+git clone https://github.com/jeremy5189/PDModerator.git
+cd PDModerator
+npm install
+vim common-config.json # Edit `common-config.json` to fill in your reCAPTCHA key, MongoDB URL and site url.
+npm run build # build frontend to server/public
+npm run server # start express.js server
 ```
 
-## Client
+## Dev documents
+
+[https://hackmd.io/JzAmBYAYHYCMEYC0AzArAJgMyPNAHEntKNIgMbQCGqlEAbKgKbThA===?both](https://hackmd.io/JzAmBYAYHYCMEYC0AzArAJgMyPNAHEntKNIgMbQCGqlEAbKgKbThA===?both)
+
+## Development
 
 ``` bash
-# install dependencies
-npm install
+# start server with nodemon on localhost:3000
+npm run mon
 
 # serve with hot reload at localhost:8080
 npm run dev
@@ -39,6 +47,3 @@ npm run e2e
 # run all tests
 npm test
 ```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
-

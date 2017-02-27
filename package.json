@@ -4,8 +4,8 @@
   "description": "Panel Discussion Moderator made with Express.js + MongoDB + Vue.js",
   "private": true,
   "scripts": {
-    "start": "node ./server/bin/www",
-    "mod": "nodemon ./server/bin/www",
+    "server": "node ./server/bin/www",
+    "mon": "nodemon ./server/bin/www",
     "dev": "node build/dev-server.js",
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
