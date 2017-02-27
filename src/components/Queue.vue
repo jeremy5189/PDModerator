@@ -109,6 +109,11 @@ export default {
     // component created
     this.updateQueue();
     this.updateSubject();
+    // Reg key event
+    window.addEventListener('keydown', this.globalKeyPress);
+    // Print manual
+    // eslint-disable-next-line
+    console.info('Timer Hotkey: \nStart/Pause: Space/Ctrl or LClick\nReset: Alt or RClick\nClick remaining text to set custom time');
   },
   methods: {
     gravatarSize(url) {
@@ -121,6 +126,9 @@ export default {
     },
     // Timer functions ------
     timer_click() {
+      this.timer_toggle();
+    },
+    timer_toggle() {
       if (this.timer.countdown > 0 && !this.timer.running) {
         // Pausing, will resume
         this.timer.handle = setInterval(this.timer_countdown, 1000);
@@ -203,6 +211,13 @@ export default {
         this.queue.list = response.body;
         this.queue.count = this.queue.list.length;
       });
+    },
+    globalKeyPress(event) {
+      if (event.which === 17 || event.which === 32) { // Ctrl or Space
+        this.timer_toggle();
+      } else if (event.which === 18) { // Alt
+        this.timer_reset();
+      }
     },
   },
   sockets: {
