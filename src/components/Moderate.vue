@@ -4,7 +4,7 @@
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
           尚未處理的講者申請
-          <span class="badge badge-pill badge-primary">{{ unprocessed_attendee_count }}</span>
+          <span class="badge badge-pill badge-primary">{{ unprocessedAttendee.length }}</span>
         </li>
       </ol>
       <table class="table table-striped table-hover">
@@ -18,7 +18,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="attendee in unprocessed_attendee">
+          <tr v-for="attendee in unprocessedAttendee">
             <td>
               <div v-bind:title="attendee.email" v-bind:style="{ backgroundImage: 'url(' + gravatarSize(attendee.gravatar) + ')' }" alt="" class="avatar">
             </td>
@@ -35,15 +35,20 @@
         </tbody>
       </table>
     </div>
-    <div class="col-4">
 
+    <div class="col-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          系統訊息 <b-badge :variant="system.status">{{ system.message }}</b-badge>
+        </li>
+      </ol>
+      <textarea id="system_message" rows="3" class="form-control" readonly>{{ system.display_message }}</textarea>
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
           變更主題
         </li>
       </ol>
-
-      <b-form>
+      <b-form v-on:submit="changeSubjectForm(this)">
         <span class="badge badge-primary">目前主題</span>
         <label>{{ current_subject }}</label>
         <b-form-input v-model="change_to_subject"></b-form-input>
@@ -51,12 +56,10 @@
           <b-button v-on:click="changeSubject" type="button" size="sm" class="pull-right" id="change-subject">變更主題</b-button>
         </div>
       </b-form>
-
-      <!-- ========================================= -->
       <ol class="breadcrumb">
         <li class="breadcrumb-item">
           已排入 Queue
-          <span class="badge badge-pill badge-primary">{{ queue_count }}</span>
+          <span class="badge badge-pill badge-primary">{{ queueAttendee.length }}</span>
         </li>
       </ol>
       <table class="table table-striped table-hover">
@@ -68,7 +71,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="attendee in queue_list">
+          <tr v-for="attendee in queueAttendee">
             <td>
               <div v-bind:title="attendee.email" v-bind:style="{ backgroundImage: 'url(' + gravatarSize(attendee.gravatar) + ')' }" alt="" class="avatar">
             </td>
@@ -86,7 +89,6 @@
 </template>
 
 <script>
-/* eslint-disable no-console */
 import config from '../../common-config.json';
 
 export default {
@@ -98,30 +100,84 @@ export default {
   },
   data() {
     return {
-      title: 'Moderate',
-      unprocessed_attendee: [],
-      unprocessed_attendee_count: 0,
-      queue_list: [],
-      queue_count: 0,
+      unprocessedAttendee: [],
+      queueAttendee: [],
       current_subject: 'Loading...',
       change_to_subject: '',
+      system: {
+        status: 'default',
+        message: 'WS loading...',
+        display_message: '',
+      },
     };
   },
   sockets: {
+    // Default event
     connect() {
-      console.log('socket connected');
+      this.system.message = 'WS connect';
+      this.system.status = 'success';
     },
+    error() {
+      this.system.message = 'WS error';
+      this.system.status = 'danger';
+    },
+    disconnect() {
+      this.system.message = 'WS disconnect';
+      this.system.status = 'danger';
+    },
+    connecting() {
+      this.system.message = 'WS connecting';
+      this.system.status = 'warning';
+    },
+    reconnecting() {
+      this.system.message = 'WS reconnecting';
+      this.system.status = 'warning';
+    },
+    // User event
     newAttendee(obj) {
-      console.log('ws: newAttendee');
-      this.unprocessed_attendee.push(obj);
+      this.appendDispMsg('ws: newAttendee');
+      this.unprocessedAttendee.push(obj);
     },
     spoken() {
+      // Listen event from Queue page
+      this.appendDispMsg('ws: spoken (Queue)');
       this.updateQueue();
+    },
+    recognized() {
+      // Listen event from another Moderate page
+      this.appendDispMsg('ws: recognized (or put back)');
+      this.updateUnprocessedAttendee();
+      this.updateQueue();
+    },
+    removed() {
+      // Listen event from another Moderate page
+      this.appendDispMsg('ws: removed');
+      this.updateUnprocessedAttendee();
+    },
+    subjectChange(val) {
+      // Listen event from another Moderate page
+      this.appendDispMsg('ws: subjectChange');
+      this.current_subject = val;
     },
   },
   methods: {
+    appendDispMsg(msg) {
+      this.system.display_message += `${msg}\n`;
+      const textarea = document.getElementById('system_message');
+      textarea.scrollTop = textarea.scrollHeight;
+    },
+    vueResErrorHandler(resp) {
+      if (resp.statusText === '') {
+        this.appendDispMsg(`AJAX: Error, ok: ${resp.ok}, status: ${resp.status}`);
+      } else {
+        this.appendDispMsg(resp.statusText);
+      }
+    },
     gravatarSize(url) {
       return `${url}?s=35`;
+    },
+    changeSubjectForm(event) {
+      event.preventDefault();
     },
     updateSubject() {
       this.$http.get(`${config.api_url}/api/subject`, {}).then((resp) => {
@@ -133,13 +189,12 @@ export default {
         subject: this.change_to_subject,
       }).then((resp) => {
         if (resp.body.status) {
-          console.info('Change subject success');
           this.current_subject = this.change_to_subject;
         } else {
-          console.info('Change subject fail');
+          this.appendDispMsg('DB insert failed');
         }
-      }, () => {
-        console.error('API error');
+      }, (resp) => {
+        this.vueResErrorHandler(resp);
       });
     },
     recognizeSpeaker(_id) {
@@ -148,13 +203,16 @@ export default {
       }).then((resp) => {
         if (resp.body.status) {
           // eslint-disable-next-line
-          this.unprocessed_attendee = this.unprocessed_attendee.filter((obj) => {
+          this.unprocessedAttendee = this.unprocessedAttendee.filter((obj) => {
             // eslint-disable-next-line
             return obj._id !== _id;
           });
-          this.unprocessed_attendee_count = this.unprocessed_attendee.length;
           this.updateQueue();
+        } else {
+          this.appendDispMsg('DB insert failed');
         }
+      }, (resp) => {
+        this.vueResErrorHandler(resp);
       });
     },
     removeSpeaker(_id) {
@@ -163,12 +221,15 @@ export default {
       }).then((resp) => {
         if (resp.body.status) {
           // eslint-disable-next-line
-          this.unprocessed_attendee = this.unprocessed_attendee.filter((obj) => {
+          this.unprocessedAttendee = this.unprocessedAttendee.filter((obj) => {
             // eslint-disable-next-line
             return obj._id !== _id;
           });
-          this.unprocessed_attendee_count = this.unprocessed_attendee.length;
+        } else {
+          this.appendDispMsg('DB insert failed');
         }
+      }, (resp) => {
+        this.vueResErrorHandler(resp);
       });
     },
     putBack(_id) {
@@ -177,25 +238,30 @@ export default {
       }).then((resp) => {
         if (resp.body.status) {
           // eslint-disable-next-line
-          this.queue_list = this.queue_list.filter((obj) => {
+          this.queueAttendee = this.queueAttendee.filter((obj) => {
             // eslint-disable-next-line
             return obj._id !== _id;
           });
-          this.queue_count = this.queue_list.length;
           this.updateUnprocessedAttendee();
+        } else {
+          this.appendDispMsg('DB insert failed');
         }
+      }, (resp) => {
+        this.vueResErrorHandler(resp);
       });
     },
     updateQueue() {
       this.$http.get(`${config.api_url}/api/queue`).then((response) => {
-        this.queue_list = response.body;
-        this.queue_count = this.queue_list.length;
+        this.queueAttendee = response.body;
+      }, (resp) => {
+        this.vueResErrorHandler(resp);
       });
     },
     updateUnprocessedAttendee() {
       this.$http.get(`${config.api_url}/api/attendee`).then((response) => {
-        this.unprocessed_attendee = response.body;
-        this.unprocessed_attendee_count = this.unprocessed_attendee.length;
+        this.unprocessedAttendee = response.body;
+      }, (resp) => {
+        this.vueResErrorHandler(resp);
       });
     },
   },
@@ -216,5 +282,8 @@ export default {
 }
 .right-wrap {
   text-align: right;
+}
+#system_message {
+  background-color: white;
 }
 </style>
