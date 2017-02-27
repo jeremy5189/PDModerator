@@ -11,7 +11,7 @@
           <!-- Subject -->
           <div class="col-12" id="subject-contain">
             <h1>
-              <span class="highlight">目前主題</span> {{ subject }}
+              <b-badge :variant="system.status">目前主題</b-badge> {{ subject }}
             </h1>
           </div>
           <!-- Current user -->
@@ -72,7 +72,6 @@
 </template>
 
 <script>
-/* eslint-disable no-console */
 import config from '../../common-config.json';
 
 export default {
@@ -80,7 +79,7 @@ export default {
   data() {
     return {
       title: 'SITCON 論壇',
-      subject: '說明發言規則',
+      subject: 'Loading...',
       timer: {
         setting: 90,
         countdown: 90,
@@ -94,11 +93,14 @@ export default {
       holder: {
         attendee_name: '主持人',
         gravatar: 'https://www.gravatar.com/avatar/000?s=131',
-        summary: '尚無講者',
+        summary: 'N/A',
+      },
+      system: {
+        status: 'default', // While loading
       },
       current_speaker: {},
-      end_btn_class: 'default',
-      next_disabled: false,
+      end_btn_class: 'default', // Normal state
+      next_disabled: false, // btn disabled attr
     };
   },
   created() {
@@ -204,12 +206,24 @@ export default {
     },
   },
   sockets: {
+    // Default event
     connect() {
-      console.log('socket connected');
+      this.system.status = 'success';
     },
-    recognized(val) {
-      console.log('ws: recognized');
-      console.log(val);
+    error() {
+      this.system.status = 'danger';
+    },
+    disconnect() {
+      this.system.status = 'danger';
+    },
+    connecting() {
+      this.system.status = 'warning';
+    },
+    reconnecting() {
+      this.system.status = 'warning';
+    },
+    // Custom event
+    recognized() {
       this.updateQueue();
     },
     subjectChange(val) {
