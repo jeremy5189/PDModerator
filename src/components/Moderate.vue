@@ -162,11 +162,11 @@ export default {
     },
   },
   filters: {
-    unix2time() {
-      return Moment().format('hh:mm:ss');
+    unix2time(unix) {
+      return Moment(unix).format('hh:mm:ss');
     },
-    unix2human() {
-      return Moment().format('Y:MM:DD hh:mm:ss');
+    unix2human(unix) {
+      return Moment(unix).format('Y:MM:DD hh:mm:ss');
     },
   },
   methods: {
