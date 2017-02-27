@@ -117,6 +117,7 @@ export default {
         this.subject = resp.body;
       });
     },
+    // Timer functions ------
     timer_click() {
       if (this.timer.countdown > 0 && !this.timer.running) {
         // Pausing, will resume
@@ -155,9 +156,10 @@ export default {
         this.timer_reset();
       }
     },
+    // End timer function ---------
     next_speaker() {
       // Move first speaker in list to current_speaker
-      if (this.queue.list.length > 0) {
+      if (this.queue.list.length > 0 && this.next_disabled !== true) {
         this.current_speaker = this.queue.list[0];
         // Remove first one in queue list
         this.queue.list.shift();
@@ -229,6 +231,9 @@ export default {
 
 <!-- Add "scoped " attribute to limit CSS to this component only -->
 <style scoped>
+.btn {
+  cursor: pointer;
+}
 /* Right hand site circle control */
 .square {
   background-color: lightgray;
