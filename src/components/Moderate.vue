@@ -13,7 +13,7 @@
             <th>#</th>
             <th>Name</th>
             <th>Time</th>
-            <th>Summary</th>
+            <th id="summary-th">Summary</th>
             <th>Opr</th>
           </tr>
         </thead>
@@ -23,12 +23,12 @@
               <div v-bind:title="attendee.email" v-bind:style="{ backgroundImage: 'url(' + gravatarSize(attendee.gravatar) + ')' }" alt="" class="avatar">
             </td>
             <td>{{ attendee.attendee_name }}</td>
-            <td>{{ attendee.created_at }}</td>
+            <td v-bind:title="attendee.created_at | unix2human">{{ attendee.created_at | unix2time }}</td>
             <td>{{ attendee.summary }}</td>
             <td>
               <b-button-group>
-                <b-button v-on:click="recognizeSpeaker(attendee._id)">+</b-button>
-                <b-button v-on:click="removeSpeaker(attendee._id)" variant="danger">-</b-button>
+                <b-button v-on:click="removeSpeaker(attendee._id)" variant="danger">✖</b-button>
+                <b-button v-on:click="recognizeSpeaker(attendee._id)">➡</b-button>
               </b-button-group>
             </td>
           </tr>
@@ -71,14 +71,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="attendee in queueAttendee">
+          <tr v-for="attendee in queueAttendee" v-bind:title="attendee.summary">
             <td>
               <div v-bind:title="attendee.email" v-bind:style="{ backgroundImage: 'url(' + gravatarSize(attendee.gravatar) + ')' }" alt="" class="avatar">
             </td>
             <td>{{ attendee.attendee_name }}</td>
             <td>
               <b-button variant="warning" v-on:click="putBack(attendee._id)">
-                &lt;-
+                ⇦
               </b-button>
             </td>
           </tr>
@@ -89,6 +89,7 @@
 </template>
 
 <script>
+import Moment from 'moment';
 import config from '../../common-config.json';
 
 export default {
@@ -158,6 +159,14 @@ export default {
       // Listen event from another Moderate page
       this.appendDispMsg('ws: subjectChange');
       this.current_subject = val;
+    },
+  },
+  filters: {
+    unix2time() {
+      return Moment().format('hh:mm:ss');
+    },
+    unix2human() {
+      return Moment().format('Y:MM:DD hh:mm:ss');
     },
   },
   methods: {
@@ -285,5 +294,13 @@ export default {
 }
 #system_message {
   background-color: white;
+}
+#summary-th {
+  width: 326px;
+  max-width: 326px;
+}
+.btn {
+  cursor: pointer;
+  font-weight: bold;
 }
 </style>
