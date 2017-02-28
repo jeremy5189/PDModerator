@@ -120,7 +120,7 @@ export default {
       return `${url}?s=131`;
     },
     updateSubject() {
-      this.$http.get(`${config.api_url}/api/subject`, {}).then((resp) => {
+      this.$http.get(`${config.api_url}/public/subject`, {}).then((resp) => {
         this.subject = resp.body;
       });
     },
@@ -207,7 +207,7 @@ export default {
       }
     },
     updateQueue() {
-      this.$http.get(`${config.api_url}/api/queue`).then((response) => {
+      this.$http.get(`${config.api_url}/public/queue`).then((response) => {
         this.queue.list = response.body;
         this.queue.count = this.queue.list.length;
       });

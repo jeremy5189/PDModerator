@@ -190,7 +190,7 @@ export default {
       event.preventDefault();
     },
     updateSubject() {
-      this.$http.get(`${config.api_url}/api/subject`, {}).then((resp) => {
+      this.$http.get(`${config.api_url}/public/subject`, {}).then((resp) => {
         this.current_subject = resp.body;
       });
     },
@@ -261,7 +261,7 @@ export default {
       });
     },
     updateQueue() {
-      this.$http.get(`${config.api_url}/api/queue`).then((response) => {
+      this.$http.get(`${config.api_url}/public/queue`).then((response) => {
         this.queueAttendee = response.body;
       }, (resp) => {
         this.vueResErrorHandler(resp);

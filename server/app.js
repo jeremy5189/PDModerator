@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 // Set up routes
 var api = require('./routes/api');
+var public = require('./routes/public.js');
 
 // Set up express and socket.io
 var app = express();
@@ -41,6 +42,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', api);
+app.use('/public', public);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

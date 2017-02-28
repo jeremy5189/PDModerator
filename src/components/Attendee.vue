@@ -77,7 +77,7 @@ const attendee = {
     click() {
       if (this.g_recaptcha_response !== null) {
         this.alert.danger = false;
-        this.$http.post(`${config.api_url}/api/attendee`, {
+        this.$http.post(`${config.api_url}/public/attendee`, {
           attendee_name: this.attendee_name,
           email: this.email,
           summary: this.summary,
