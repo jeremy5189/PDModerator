@@ -12,20 +12,20 @@
         {{ alert.danger_text }}
       </b-alert>
 
-      <b-form-input v-model="form.attendee_name" maxlength="10" id="attendee_name" class="input" placeholder="Enter your name"></b-form-input>
+      <b-form-input  v-model="form.attendee_name" maxlength="20" id="attendee_name" class="input" placeholder="Enter your name"></b-form-input>
       <label for="name">
-        請輸入顯示名稱以排入講者 Queue，長度不得超過 10 字元 (必填)
+        請輸入顯示名稱，長度不得超過 20 字符 (必填, 目前<a href="https://www.npmjs.com/package/wcwidth">字符</a>數：{{ form.attendee_name_wclen }})
       </label>
 
       <b-form-input v-model="form.email" id="email" class="input" type="email" placeholder="Enter your email"></b-form-input>
       <label for="email">
-        請輸入電子郵件（選填，會顯示於台上的
-        <a src="https://zh-tw.gravatar.com/">Gravatar</a>）
+        請輸入電子郵件（選填，會自動取得關聯之 
+        <a href="https://zh-tw.gravatar.com/">Gravatar</a> 顯示於投影幕）
       </label>
 
       <textarea v-model="form.summary" maxlength="100" name="summary" id="summary" class="form-control input" rows="5" placeholder="Enter your speaking summary"></textarea>
       <label for="summary">
-        請輸入您的發言概要，至多不超過 100 個字元 (選填，會顯示於台上)
+        請輸入您的發言概要（顯示於投影幕），至多不超過 200 個字符 (選填, 目前<a href="https://www.npmjs.com/package/wcwidth">字符</a>數：{{ form.summary_wclen }})
       </label>
 
       <br>
@@ -46,6 +46,7 @@
 
 <script>
 import VueRecaptcha from 'vue-recaptcha';
+import wcWidth from 'wcwidth'; // Chinese length = 2
 import config from '../../common-config.json';
 
 /* eslint-disable no-console */
@@ -62,6 +63,8 @@ const attendee = {
         attendee_name: null,
         email: null,
         summary: null,
+        attendee_name_wclen: 0,
+        summary_wclen: 0,
       },
       opts: {
         siteKey: config.reCAPTCHA.site_key,
@@ -75,6 +78,16 @@ const attendee = {
       g_recaptcha_response: null,
       submit: 'Submit',
     };
+  },
+  watch: {
+    // eslint-disable-next-line
+    'form.attendee_name': function () {
+      this.form.attendee_name_wclen = wcWidth(this.form.attendee_name);
+    },
+    // eslint-disable-next-line
+    'form.summary': function () {
+      this.form.summary_wclen = wcWidth(this.form.summary);
+    },
   },
   methods: {
     click() {
@@ -118,6 +131,12 @@ const attendee = {
       let stat = true;
       if (this.form.attendee_name === '') {
         msg = '名稱為必填欄位';
+        stat = false;
+      } else if (wcWidth(this.form.attendee_name) > 20) {
+        msg = '名稱超過 20 個字符';
+        stat = false;
+      } else if (wcWidth(this.form.summary) > 200) {
+        msg = '發言摘要超過 200 個字符';
         stat = false;
       }
       return {

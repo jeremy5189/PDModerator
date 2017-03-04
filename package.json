@@ -34,7 +34,8 @@
     "vue-recaptcha": "^0.3.2",
     "vue-resource": "^1.2.0",
     "vue-router": "^2.2.1",
-    "vue-socket.io": "^2.1.0"
+    "vue-socket.io": "^2.1.0",
+    "wcwidth": "^1.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
