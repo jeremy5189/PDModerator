@@ -139,9 +139,13 @@ export default {
       this.system.status = 'warning';
     },
     // User event
-    newAttendee(obj) {
+    newAttendee() {
       this.appendDispMsg('ws: newAttendee');
-      this.unprocessedAttendee.push(obj);
+      if (config.direct_to_queue) {
+        this.updateQueue();
+      } else {
+        this.updateUnprocessedAttendee();
+      }
     },
     spoken() {
       // Listen event from Queue page
@@ -167,15 +171,15 @@ export default {
   },
   filters: {
     unix2time(unix) {
-      return Moment(unix).format('hh:mm:ss');
+      return Moment.unix(unix).format('HH:mm:ss');
     },
     unix2human(unix) {
-      return Moment(unix).format('Y:MM:DD hh:mm:ss');
+      return Moment.unix(unix).format('Y:MM:DD HH:mm:ss');
     },
   },
   methods: {
     appendDispMsg(msg) {
-      const time = Moment().format('hh:mm:ss');
+      const time = Moment().format('HH:mm:ss');
       this.system.display_message += `\n${time}: ${msg}`;
       const textarea = document.getElementById('system_message');
       textarea.scrollTop = textarea.scrollHeight - textarea.clientHeight;
