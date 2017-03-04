@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var { ObjectID } = require('mongodb'); // MongoDB _id
+var wcwidth = require('wcwidth');
 var config = require('../../common-config.json');
 
 /*
@@ -16,85 +17,94 @@ router.post('/attendee', function(req, res, next) {
   if (req.body.attendee_name === undefined ||
     req.body.summary === undefined ||
     req.body.email === undefined ||
-    req.body.g_recaptcha_response === undefined) {
-
+    req.body.g_recaptcha_response === undefined ||
+    req.body.attendee_name === '' ||
+    req.body.summary === '' ||
+    req.body.email === '' ||
+    req.body.g_recaptcha_response === '') {
     console.log(req.body);
     console.log('Bad Request');
-    res.status(400).send('Bad Request');
-  }
+    res.status(400).send('Bad Request, lack of args');
+  } else if (wcwidth(req.body.attendee_name) > 20 ||
+    wcwidth(req.body.summary) > 200 ) {
+    console.log(req.body);
+    console.log('Bad Request, attendee_name > 20 || summary > 200');
+    res.status(400).send('Bad Request, attendee_name > 20 || summary > 200');
+  } else {
 
-  var request = require('request');
-  var moment = require('moment');
-  var md5 = require('md5');
+    var request = require('request');
+    var moment = require('moment');
+    var md5 = require('md5');
 
-  // Check recaptcha response
-  request.post({
-    url: 'https://www.google.com/recaptcha/api/siteverify',
-    form: {
-      secret: config.reCAPTCHA['secret'],
-      response: req.body.g_recaptcha_response,
-      remoteip: req.client.remoteAddress
-    }
-  }, function(err, post_res, post_body) {
+    // Check recaptcha response
+    request.post({
+      url: 'https://www.google.com/recaptcha/api/siteverify',
+      form: {
+        secret: config.reCAPTCHA['secret'],
+        response: req.body.g_recaptcha_response,
+        remoteip: req.client.remoteAddress
+      }
+    }, function(err, post_res, post_body) {
 
-    if ((post_res && post_res.statusCode == 200 &&
-        JSON.parse(post_body).success == true) ||
-      !(config.reCAPTCHA['enabled'])) {
+      if ((post_res && post_res.statusCode == 200 &&
+          JSON.parse(post_body).success == true) ||
+        !(config.reCAPTCHA['enabled'])) {
 
-      var attendee = {
-        attendee_name: req.body.attendee_name,
-        summary: req.body.summary,
-        email: req.body.email,
-        gravatar: `https://www.gravatar.com/avatar/${md5(req.body.email)}`,
-        created_at: moment().unix(),
-        recognized_at: 0, // To be toggled by moderators
-        spoken_at: 0,
-        removed_at: 0
-      };
+        var attendee = {
+          attendee_name: req.body.attendee_name,
+          summary: req.body.summary,
+          email: req.body.email,
+          gravatar: `https://www.gravatar.com/avatar/${md5(req.body.email)}`,
+          created_at: moment().unix(),
+          recognized_at: 0, // To be toggled by moderators
+          spoken_at: 0,
+          removed_at: 0
+        };
 
-      var MongoClient = require('mongodb').MongoClient,
-        assert = require('assert');
+        var MongoClient = require('mongodb').MongoClient,
+          assert = require('assert');
 
-      var insertAttendee = function(attendeeObj, db, callback) {
-        // get collection
-        var collection = db.collection('attendee');
-        // insert attendee
-        collection.insertOne(attendeeObj, function(err, ret) {
-          assert.equal(err, null);
-          assert.equal(1, ret.result.n);
-          assert.equal(1, ret.ops.length);
-          callback(ret);
-          db.close();
-        });
-      };
+        var insertAttendee = function(attendeeObj, db, callback) {
+          // get collection
+          var collection = db.collection('attendee');
+          // insert attendee
+          collection.insertOne(attendeeObj, function(err, ret) {
+            assert.equal(err, null);
+            assert.equal(1, ret.result.n);
+            assert.equal(1, ret.ops.length);
+            callback(ret);
+            db.close();
+          });
+        };
 
-      // Connection URL
-      var url = config.mongodb;
+        // Connection URL
+        var url = config.mongodb;
 
-      // Use connect method to connect to the server
-      MongoClient.connect(url, function(err, db) {
+        // Use connect method to connect to the server
+        MongoClient.connect(url, function(err, db) {
 
-        assert.equal(null, err);
+          assert.equal(null, err);
 
-        insertAttendee(attendee, db, function(ret) {
+          insertAttendee(attendee, db, function(ret) {
 
-          console.log('Insert attendee success');
-          console.log(ret.ops);
+            console.log('Insert attendee success');
+            console.log(ret.ops);
 
-          // Emit Event to moderate
-          res.io.emit('newAttendee', ret.ops[0]);
+            // Emit Event to moderate
+            res.io.emit('newAttendee', ret.ops[0]);
 
-          res.send({
-            status: ret.result.ok
+            res.send({
+              status: ret.result.ok
+            });
           });
         });
-      });
-    } else {
-      console.log('Bad reCAPTCHA');
-      console.log(post_body);
-      res.status(418).send('Bad reCAPTCHA, I\'m a teapot!');
-    }
-  });
+      } else {
+        console.log('Bad reCAPTCHA');
+        console.log(post_body);
+        res.status(418).send('Bad reCAPTCHA, I\'m a teapot!');
+      }
+    });
+  }
 });
 
 /*
