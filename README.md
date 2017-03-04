@@ -1,12 +1,28 @@
 # PDModerator
 
-Panel Discussion Moderator for SITCON
+PDModerator is a conference software developed for SITCON 2017 Panel Discussion. 
+
+PDModerator aims to provide equal speaking rights to every attendee in the conference room. Attendee can submit speaker application via the PDMod interface. Which was later review by the moderator and been put on the speaker queue (Projected on the screen to everyone).
+
+### Attendee Interface
+
+![http://i.imgur.com/75LlBLY.png](http://i.imgur.com/75LlBLY.png)
+
+### Queue Interface (1024 x 768)
+
+![http://i.imgur.com/w7tXh28.png](http://i.imgur.com/w7tXh28.png)
+
+### Moderator Interface
+
+![http://i.imgur.com/cwcbA74.png](http://i.imgur.com/cwcbA74.png)
+
 
 ## Requirements
 
 - node.js >= 4.0.0
 - npm >= 3.0.0
 - MongoDB
+- reCAPTCHA
 
 ## Install
 
