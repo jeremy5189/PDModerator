@@ -89,8 +89,12 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import VueSocketio from 'vue-socket.io';
 import Moment from 'moment';
 import config from '../../common-config.json';
+
+Vue.use(VueSocketio, config.ws_url);
 
 export default {
   name: 'moderate',

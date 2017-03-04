@@ -6,14 +6,11 @@ import BootstrapVue from 'bootstrap-vue';
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
 import VueResource from 'vue-resource';
-import VueSocketio from 'vue-socket.io';
 import App from './App';
 import router from './router';
-import config from '../common-config.json';
 
 Vue.use(BootstrapVue);
 Vue.use(VueResource);
-Vue.use(VueSocketio, config.ws_url);
 
 /* eslint-disable no-new */
 new Vue({

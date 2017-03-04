@@ -72,7 +72,11 @@
 </template>
 
 <script>
+import Vue from 'vue';
+import VueSocketio from 'vue-socket.io';
 import config from '../../common-config.json';
+
+Vue.use(VueSocketio, config.ws_url);
 
 export default {
   name: 'queue',
