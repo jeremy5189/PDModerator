@@ -249,6 +249,11 @@ export default {
       // Listen event from another Moderate page
       this.subject = val;
     },
+    newAttendee() {
+      if (config.direct_to_queue) {
+        this.updateQueue();
+      }
+    },
   },
   filters: {
     shortName(str) {
