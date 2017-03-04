@@ -23,7 +23,7 @@
         <a href="https://zh-tw.gravatar.com/">Gravatar</a> 顯示於投影幕）
       </label>
 
-      <textarea v-model="form.summary" maxlength="100" name="summary" id="summary" class="form-control input" rows="5" placeholder="Enter your speaking summary"></textarea>
+      <textarea v-model="form.summary" maxlength="200" name="summary" id="summary" class="form-control input" rows="5" placeholder="Enter your speaking summary"></textarea>
       <label for="summary">
         請輸入您的發言概要（顯示於投影幕），至多不超過 200 個字符 (選填, 目前<a href="https://www.npmjs.com/package/wcwidth">字符</a>數：{{ form.summary_wclen }})
       </label>
