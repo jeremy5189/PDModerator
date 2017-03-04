@@ -6,5 +6,6 @@
   },
   "ws_url": "http://localhost:3000",
   "api_url": "http://localhost:3000",
-  "mongodb": "mongodb://localhost:27017/pdmod"
+  "mongodb": "mongodb://localhost:27017/pdmod",
+  "direct_to_queue": false
 }

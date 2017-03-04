@@ -75,7 +75,7 @@ const attendee = {
         danger: false,
         danger_text: '發生錯誤，請重新整理後重試',
       },
-      g_recaptcha_response: null,
+      g_recaptcha_response: config.reCAPTCHA.enabled ? null : 'disabled-by-config',
       submit: 'Submit',
     };
   },
@@ -152,7 +152,7 @@ const attendee = {
     },
     resetWrap() {
       this.resetRecaptcha();
-      this.g_recaptcha_response = null;
+      this.g_recaptcha_response = config.reCAPTCHA.enabled ? null : 'disabled-by-config';
       this.submit = 'Submit';
     },
     onVerify(response) {

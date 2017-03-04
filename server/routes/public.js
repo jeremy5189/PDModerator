@@ -22,15 +22,22 @@ router.post('/attendee', function(req, res, next) {
     req.body.summary === '' ||
     req.body.email === '' ||
     req.body.g_recaptcha_response === '') {
+
     console.log(req.body);
     console.log('Bad Request');
     res.status(400).send('Bad Request, lack of args');
+
   } else if (wcwidth(req.body.attendee_name) > 20 ||
     wcwidth(req.body.summary) > 200 ) {
+
     console.log(req.body);
     console.log('Bad Request, attendee_name > 20 || summary > 200');
     res.status(400).send('Bad Request, attendee_name > 20 || summary > 200');
+
   } else {
+
+    console.log('config.direct_to_queue: %s', config.direct_to_queue);
+    console.log('config.reCAPTCHA.enabled: %s', config.reCAPTCHA.enabled);
 
     var request = require('request');
     var moment = require('moment');
@@ -50,13 +57,15 @@ router.post('/attendee', function(req, res, next) {
           JSON.parse(post_body).success == true) ||
         !(config.reCAPTCHA['enabled'])) {
 
+        var timestamp = moment().unix();
+
         var attendee = {
           attendee_name: req.body.attendee_name,
           summary: req.body.summary,
           email: req.body.email,
           gravatar: `https://www.gravatar.com/avatar/${md5(req.body.email)}`,
-          created_at: moment().unix(),
-          recognized_at: 0, // To be toggled by moderators
+          created_at: timestamp,
+          recognized_at: config.direct_to_queue ? timestamp : 0, // To be toggled by moderators or direct
           spoken_at: 0,
           removed_at: 0
         };
@@ -91,7 +100,7 @@ router.post('/attendee', function(req, res, next) {
             console.log(ret.ops);
 
             // Emit Event to moderate
-            res.io.emit('newAttendee', ret.ops[0]);
+            res.io.emit('newAttendee', 'newAttendee');
 
             res.send({
               status: ret.result.ok
