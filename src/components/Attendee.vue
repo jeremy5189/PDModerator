@@ -12,18 +12,18 @@
         {{ alert.danger_text }}
       </b-alert>
 
-      <b-form-input v-model="attendee_name" maxlength="10" id="attendee_name" class="input" placeholder="Enter your name"></b-form-input>
+      <b-form-input v-model="form.attendee_name" maxlength="10" id="attendee_name" class="input" placeholder="Enter your name"></b-form-input>
       <label for="name">
         請輸入顯示名稱以排入講者 Queue，長度不得超過 10 字元 (必填)
       </label>
 
-      <b-form-input v-model="email" id="email" class="input" type="email" placeholder="Enter your email"></b-form-input>
+      <b-form-input v-model="form.email" id="email" class="input" type="email" placeholder="Enter your email"></b-form-input>
       <label for="email">
         請輸入電子郵件（選填，會顯示於台上的
         <a src="https://zh-tw.gravatar.com/">Gravatar</a>）
       </label>
 
-      <textarea v-model="summary" maxlength="100" name="summary" id="summary" class="form-control input" rows="5" placeholder="Enter your speaking summary"></textarea>
+      <textarea v-model="form.summary" maxlength="100" name="summary" id="summary" class="form-control input" rows="5" placeholder="Enter your speaking summary"></textarea>
       <label for="summary">
         請輸入您的發言概要，至多不超過 100 個字元 (選填，會顯示於台上)
       </label>
@@ -32,10 +32,10 @@
 
       <div class="center">
         <div id="recaptcha">
-          <vue-recaptcha ref="recaptcha" :options="opts" :sitekey="opts.siteKey" @verify="onVerify" @expired="onExpired"></vue-recaptcha>
+          <vue-recaptcha ref="recaptcha" id="recaptcha" :options="opts" :sitekey="opts.siteKey" @verify="onVerify" @expired="onExpired"></vue-recaptcha>
         </div>
         <b-button id="submit" @click="click">
-          Submit
+          {{ submit }}
         </b-button>
       </div>
 
@@ -57,56 +57,90 @@ const attendee = {
   },
   data() {
     return {
-      title: 'Speaker Queue',
-      attendee_name: null,
-      email: null,
-      summary: null,
+      title: '發言申請',
+      form: {
+        attendee_name: null,
+        email: null,
+        summary: null,
+      },
       opts: {
-        siteKey: '6LfanRYUAAAAAPL2JK96iI3Y7WeLsq1FxuG54zBG',
+        siteKey: config.reCAPTCHA.site_key,
       },
       alert: {
         success: false,
-        success_text: '成功排入講者 Queue 中',
+        success_text: '成功送出發言申請，請留意投影幕上的講者 Queue',
         danger: false,
         danger_text: '發生錯誤，請重新整理後重試',
       },
       g_recaptcha_response: null,
+      submit: 'Submit',
     };
   },
   methods: {
     click() {
-      if (this.g_recaptcha_response !== null) {
+      const checkResult = this.checkForm();
+      if (this.g_recaptcha_response !== null && checkResult.status) {
         this.alert.danger = false;
+        this.submit = '連線中...';
         this.$http.post(`${config.api_url}/public/attendee`, {
-          attendee_name: this.attendee_name,
-          email: this.email,
-          summary: this.summary,
+          attendee_name: this.form.attendee_name,
+          email: this.form.email,
+          summary: this.form.summary,
           g_recaptcha_response: this.g_recaptcha_response,
         }).then((response) => {
           // success
           if (response.body.status) {
             this.alert.success = true;
+            this.form.attendee_name = '';
+            this.form.email = '';
+            this.form.summary = '';
+            this.submit = 'Submit';
+          } else if (response.status !== 200) {
+            this.dangerAlert('伺服器資料寫入失敗，請稍候重試');
           } else {
-            this.alert.danger = true;
+            this.dangerAlert(`伺服器回傳錯誤代碼：${response.status}`);
           }
-          this.resetRecaptcha();
+          this.resetWrap();
         }, () => {
           // Fail
-          this.alert.danger = true;
-          this.resetRecaptcha();
+          this.dangerAlert('連線失敗，請檢查網路連線後重試');
+          this.resetWrap();
         });
+      } else if (!checkResult.status) {
+        this.dangerAlert(checkResult.message);
       } else {
-        this.alert.danger_text = '請完成 CAPTCHA 驗證';
-        this.alert.danger = true;
+        this.resetRecaptcha();
+        this.dangerAlert('請完成 reCAPTCHA 驗證');
       }
     },
+    checkForm() {
+      let msg = '';
+      let stat = true;
+      if (this.form.attendee_name === '') {
+        msg = '名稱為必填欄位';
+        stat = false;
+      }
+      return {
+        status: stat,
+        message: msg,
+      };
+    },
+    dangerAlert(msg) {
+      this.alert.success = false;
+      this.alert.danger_text = msg;
+      this.alert.danger = true;
+      this.submit = 'Submit';
+    },
+    resetWrap() {
+      this.resetRecaptcha();
+      this.g_recaptcha_response = null;
+      this.submit = 'Submit';
+    },
     onVerify(response) {
-      // console.log('Verify: %s', response);
       this.g_recaptcha_response = response;
     },
     onExpired() {
-      console.info('Recaptcha Expired');
-      this.resetRecaptcha();
+      this.resetWrap();
     },
     resetRecaptcha() {
       this.$refs.recaptcha.reset(); // Direct call reset method
