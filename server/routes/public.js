@@ -23,21 +23,21 @@ router.post('/attendee', function(req, res, next) {
     req.body.email === '' ||
     req.body.g_recaptcha_response === '') {
 
-    console.log(req.body);
-    console.log('Bad Request');
+    //console.log(req.body);
+    //console.log('Bad Request');
     res.status(400).send('Bad Request, lack of args');
 
   } else if (wcwidth(req.body.attendee_name) > 20 ||
     wcwidth(req.body.summary) > 200 ) {
 
-    console.log(req.body);
-    console.log('Bad Request, attendee_name > 20 || summary > 200');
+    //console.log(req.body);
+    //console.log('Bad Request, attendee_name > 20 || summary > 200');
     res.status(400).send('Bad Request, attendee_name > 20 || summary > 200');
 
   } else {
 
-    console.log('config.direct_to_queue: %s', config.direct_to_queue);
-    console.log('config.reCAPTCHA.enabled: %s', config.reCAPTCHA.enabled);
+    //console.log('config.direct_to_queue: %s', config.direct_to_queue);
+    //console.log('config.reCAPTCHA.enabled: %s', config.reCAPTCHA.enabled);
 
     var request = require('request');
     var moment = require('moment');
@@ -96,8 +96,8 @@ router.post('/attendee', function(req, res, next) {
 
           insertAttendee(attendee, db, function(ret) {
 
-            console.log('Insert attendee success');
-            console.log(ret.ops);
+            //console.log('Insert attendee success');
+            //console.log(ret.ops);
 
             // Emit Event to moderate
             res.io.emit('newAttendee', 'newAttendee');
@@ -108,8 +108,8 @@ router.post('/attendee', function(req, res, next) {
           });
         });
       } else {
-        console.log('Bad reCAPTCHA');
-        console.log(post_body);
+        //console.log('Bad reCAPTCHA');
+        //console.log(post_body);
         res.status(418).send('Bad reCAPTCHA, I\'m a teapot!');
       }
     });

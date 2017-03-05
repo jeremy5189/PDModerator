@@ -14,7 +14,7 @@ var config = require('../../common-config.json');
  */
 router.get('/attendee', function(req, res, next) {
 
-  console.log('GET /api/attendee');
+  //console.log('GET /api/attendee');
 
   var MongoClient = require('mongodb').MongoClient,
     assert = require('assert');
@@ -54,7 +54,7 @@ router.get('/attendee', function(req, res, next) {
 router.put('/attendee/:id', function(req, res, next) {
 
   var moment = require('moment');
-  console.log('PUT /api/attendee/%s', req.params.id);
+  //console.log('PUT /api/attendee/%s', req.params.id);
 
   var op = req.body,
     op_type = '',
@@ -71,7 +71,7 @@ router.put('/attendee/:id', function(req, res, next) {
     op_type = 'spoken';
   } else {
     console.log(req.body);
-    console.log('Bad Request');
+    //console.log('Bad Request');
     res.status(400).send('Bad Request');
   }
 
@@ -92,7 +92,7 @@ router.put('/attendee/:id', function(req, res, next) {
     }, {
       $set: payload
     }, function(err, ret) {
-      console.log('update attendee success');
+      //console.log('update attendee success');
       assert.equal(null, err);
       assert.equal(1, ret.result.n);
       db.close();
@@ -149,8 +149,8 @@ router.post('/subject', function(req, res, next) {
 
     insertSubject(subject, db, function(ret) {
 
-      console.log('Subject changed');
-      console.log(ret.ops);
+      //console.log('Subject changed');
+      //console.log(ret.ops);
 
       // Emit Event
       res.io.emit('subjectChange', req.body.subject);
