@@ -47,7 +47,7 @@ PORT=3001 pm2 start server/bin/www --name=pdmod
 
 ## Config
 
-```json
+```js
 {
   "reCAPTCHA": {
     "enabled": false,
@@ -66,17 +66,35 @@ PORT=3001 pm2 start server/bin/www --name=pdmod
 It's important to restrict /api/* access if you are running PDModerator on public domain.
 
 ```
-location /api {
-    auth_basic "Restricted";
-    auth_basic_user_file /etc/nginx/.htpasswd;
-    include /etc/nginx/nodejs_proxy.conf;
-    proxy_pass         http://127.0.0.1:3001;
-}
+ upstream nodejs {
+     server localhost:3001;
+ }
 
-location / {
-    include /etc/nginx/nodejs_proxy.conf;
-    proxy_pass         http://127.0.0.1:3001;
-}
+ server {
+     listen 80;
+     listen [::]:80;
+
+     root ~/PDModerator/server/public;
+     server_name DOMAIN;
+
+     location / {
+         # First attempt to serve request as file, then
+         # as directory, then fall back Express.js
+         try_files $uri $uri/ @nodejs;
+     }
+
+     location /api {
+         auth_basic "Restricted";
+         auth_basic_user_file /etc/nginx/.htpasswd;
+         include /etc/nginx/nodejs_proxy.conf;
+         proxy_pass         http://nodejs;
+     }
+
+     location @nodejs {
+         include /etc/nginx/nodejs_proxy.conf;
+         proxy_pass         http://nodejs;
+     }
+ }
 ```
 
 Generate http basic auth password with 
