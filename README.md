@@ -45,6 +45,11 @@ npm run server # start express.js server on localhost:3000
 PORT=3001 pm2 start server/bin/www --name=pdmod
 ```
 
+### Page
+
+- Moderator Page: http://localhost:3001/#/Moderate
+- Queue Page: http://localhost:3001/#/Queue
+
 ## Config
 
 ```js
@@ -54,18 +59,26 @@ PORT=3001 pm2 start server/bin/www --name=pdmod
     "site_key": "",
     "secret": ""
   },
-  "ws_url": "http://localhost:3000",   // Websocekt URL
-  "api_url": "http://localhost:3000",  // API URL
-  "mongodb": "mongodb://localhost:27017/pdmod", 
-  "direct_to_queue": false  // Set it to true to skip moderate procedure
+  "ws_url": "http://localhost:3000",
+  "api_url": "http://localhost:3000",
+  "mongodb": "mongodb://localhost:27017/pdmod",
+  "direct_to_queue": false, // Set true to bypass moderation process
+  "allow_speaker_ts": {
+    "start": 1489809600,
+    "comment1": "2017/3/18 12:00 (UTC+8)",
+    "end": 1489820400,
+    "comment2": "2017/3/18 15:00 (UTC+8)",
+    "force_ignore": false // Set true to bypass time check
+  }
 }
+
 ```
 
 ## Restrict API access & Nginx settings
 
 It's important to restrict /api/* access if you are running PDModerator on public domain.
 
-```
+```nginx
  upstream nodejs {
      server localhost:3001;
  }
@@ -99,14 +112,14 @@ It's important to restrict /api/* access if you are running PDModerator on publi
 
 Generate http basic auth password with 
 
-```
+```bash
 sudo apt-get install apache2-utils
 sudo htpasswd -c /etc/nginx/.htpasswd pdmod
 ```
 
 ### /etc/nginx/nodejs_proxy.conf
 
-```
+```nginx
 proxy_set_header   Upgrade          $http_upgrade;
 proxy_set_header   Connection       "upgrade";
 proxy_http_version 1.1;
