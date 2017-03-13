@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-1"></div>
-    <div class="col-10">
+    <div class="col-10 form-col">
 
       <h2>{{ title }}</h2>
       <b-alert v-if="alert.success" :show="true" state="success" dismissible>
@@ -34,9 +34,12 @@
         <div id="recaptcha">
           <vue-recaptcha ref="recaptcha" id="recaptcha" :options="opts" :sitekey="opts.siteKey" @verify="onVerify" @expired="onExpired"></vue-recaptcha>
         </div>
-        <b-button id="submit" @click="click">
+        <b-button id="submit" class="custom-btn" @click="click">
           {{ submit }}
         </b-button>
+        <a href="/#/" class="btn btn-info custom-btn">
+          發言說明
+        </a>
       </div>
 
     </div>
@@ -76,7 +79,7 @@ const attendee = {
         danger_text: '發生錯誤，請重新整理後重試',
       },
       g_recaptcha_response: config.reCAPTCHA.enabled ? null : 'disabled-by-config',
-      submit: 'Submit',
+      submit: '送出發言',
     };
   },
   watch: {
@@ -178,7 +181,7 @@ export default attendee;
   justify-content: center;
   margin-top: 1.5em;
 }
-#submit {
+.custom-btn {
   margin: 0 auto;
   margin-top: 1.5em;
   margin-bottom: 6em;
@@ -186,7 +189,7 @@ export default attendee;
 h2 {
   margin-top: 2em;
   text-align: center;
-  margin-bottom: 0.5em;
+  margin-bottom: 1.5em;
 }
 .alert {
   margin: 0 auto;
