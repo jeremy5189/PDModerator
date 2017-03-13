@@ -12,7 +12,7 @@
         {{ alert.danger_text }}
       </b-alert>
 
-      <b-form-input  v-model="form.attendee_name" maxlength="20" id="attendee_name" class="input" placeholder="Enter your name"></b-form-input>
+      <b-form-input v-model="form.attendee_name" maxlength="20" id="attendee_name" class="input" placeholder="Enter your name"></b-form-input>
       <label for="name">
         請輸入顯示名稱，長度不得超過 20 字符 (必填, 目前<a href="https://www.npmjs.com/package/wcwidth">字符</a>數：{{ form.attendee_name_wclen }})
       </label>

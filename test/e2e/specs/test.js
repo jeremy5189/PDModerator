@@ -11,9 +11,16 @@ module.exports = {
     browser
       .url(devServer)
       .waitForElementVisible('#app', 5000)
-      .assert.elementPresent('.hello')
-      .assert.containsText('h1', 'Welcome to Your Vue.js App')
-      .assert.elementCount('img', 1)
+      .assert.elementPresent('.row')
+      .assert.containsText('h2', '發言申請')
+      .assert.elementCount('input', 2)
+      .assert.elementCount('textarea', 2)
+      .setValue('#attendee_name', 'Test-e2e')
+      .setValue('#email', 'user@example.com')
+      .setValue('#summary', "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type a")
+      .click('#submit')
+      .pause(2000)
+      .assert.containsText('.alert-success', '成功送出發言申請，請留意投影幕上的講者 Queue')
       .end();
   },
 };
