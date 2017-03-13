@@ -12,17 +12,25 @@
     </p>
     <h3>論壇進行說明</h3>
     <ul>
-      <li>每位與會者都可以透過 SITCON 論壇發言系統登記發言。</li>
-      <li>完成登記後經過主持人確認，將被排入發言佇列（Queue），並顯示於投影幕上。</li>
+      <li>每位與會者都可以透過 SITCON 論壇發言系統登記發言</li>
+      <li>完成登記後經過主持人確認，將被排入發言佇列（Queue），並顯示於投影幕上</li>
       <li>與會者每次皆有 90 秒發言時間，超過則需停止發言</li>
       <li>所有發言請務必遵守 SITCON CoC 及符合討論主題</li>
+      <li>不接受遠端發言，若主持人唱名三次後，無人於 R0 內回應則視為放棄發言</li>
     </ul>
     <h3>發言方式說明</h3>
     <p>
       提出發言申請後請留意場內投影幕下方的 Speaker Queue，當快要輪到您發言時，請前往離您座位最近的發言點準備。並請參考下列圖片中標示的 R0 發言點。
     </p>
+    <div class="img-wrap">
+      <img src="../assets/speak_point.jpg" alt="">
+    </div>
+    <footer>
+      <p>&copy; SITCON 2017. Powered by <a target="_blank" href="https://github.com/jeremy5189/PDModerator">PDModerator</a></p>
+    </footer>
   </div>
   <div class="col-1"></div>
+    
 </div>
 </template>
 
@@ -76,5 +84,19 @@ h3 {
   margin-top: 1.5em;
   text-align: center;
   margin-bottom: 1em;
+}
+.img-wrap {
+  text-align: center;
+  margin-top: 2em;
+  margin-bottom: 3em;
+}
+.img-wrap img {
+  width: 100%;
+  height: auto;
+  max-width: 419px;
+}
+footer {
+  text-align: center;
+  margin-bottom: 2em;
 }
 </style>
