@@ -13,6 +13,9 @@ var config = require('../../common-config.json');
  */
 router.post('/attendee', function(req, res, next) {
 
+  var moment = require('moment');
+  const now = moment().unix();
+
   // Check post body data
   if (req.body.attendee_name === undefined ||
     req.body.summary === undefined ||
@@ -27,6 +30,11 @@ router.post('/attendee', function(req, res, next) {
     //console.log('Bad Request');
     res.status(400).send('Bad Request, lack of args');
 
+  } else if ((now < config.allow_speaker_ts.start || now > config.allow_speaker_ts.end) && 
+              !config.allow_speaker_ts.force_ignore) { 
+    
+    res.status(403).send('Forbidden, system not open');
+
   } else if (wcwidth(req.body.attendee_name) > 20 ||
     wcwidth(req.body.summary) > 200 ) {
 
@@ -40,7 +48,6 @@ router.post('/attendee', function(req, res, next) {
     //console.log('config.reCAPTCHA.enabled: %s', config.reCAPTCHA.enabled);
 
     var request = require('request');
-    var moment = require('moment');
     var md5 = require('md5');
 
     // Check recaptcha response
