@@ -12,18 +12,18 @@
         {{ alert.danger_text }}
       </b-alert>
 
-      <b-form-input v-model="form.attendee_name" maxlength="20" id="attendee_name" class="input" placeholder="Enter your name"></b-form-input>
+      <b-form-input v-model="form.attendee_name" maxlength="20" id="attendee_name" class="input" placeholder="請輸入顯示名稱，建議加上學校/社團/職位名稱等"></b-form-input>
       <label for="name">
-        請輸入顯示名稱，長度不得超過 20 字符 (必填, 目前<a href="https://www.npmjs.com/package/wcwidth">字符</a>數：{{ form.attendee_name_wclen }})
+        請輸入名稱，長度不得超過 20 字符 (必填, 目前<a href="https://www.npmjs.com/package/wcwidth">字符</a>數：{{ form.attendee_name_wclen }})
       </label>
 
-      <b-form-input v-model="form.email" id="email" class="input" type="email" placeholder="Enter your email"></b-form-input>
+      <b-form-input v-model="form.email" id="email" class="input" type="email" placeholder="Gravatar Email"></b-form-input>
       <label for="email">
         請輸入電子郵件（選填，會自動取得關聯之 
         <a href="https://zh-tw.gravatar.com/">Gravatar</a> 顯示於投影幕）
       </label>
 
-      <textarea v-model="form.summary" maxlength="200" name="summary" id="summary" class="form-control input" rows="5" placeholder="Enter your speaking summary"></textarea>
+      <textarea v-model="form.summary" maxlength="200" name="summary" id="summary" class="form-control input" rows="5" placeholder="發言摘要"></textarea>
       <label for="summary">
         請輸入您的發言概要（顯示於投影幕），至多不超過 200 個字符 (選填, 目前<a href="https://www.npmjs.com/package/wcwidth">字符</a>數：{{ form.summary_wclen }})
       </label>
