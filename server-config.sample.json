@@ -1,0 +1,8 @@
+{
+  "reCAPTCHA": {
+    "secret": ""
+  },
+  "websocket": {
+    "secret": ""
+  }
+}

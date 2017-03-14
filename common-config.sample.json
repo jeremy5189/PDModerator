@@ -1,8 +1,7 @@
 {
   "reCAPTCHA": {
     "enabled": false,
-    "site_key": "",
-    "secret": ""
+    "site_key": ""
   },
   "ws_url": "http://localhost:3000",
   "api_url": "http://localhost:3000",

@@ -52,3 +52,4 @@ server/public/static
 server/public/index.html
 
 common-config.json
+server-config.json
