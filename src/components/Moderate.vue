@@ -117,6 +117,7 @@ export default {
     connect() {
       this.system.message = 'WS connect';
       this.system.status = 'success';
+      this.joinSocketRoom();
     },
     error() {
       this.system.message = 'WS error';
@@ -175,6 +176,15 @@ export default {
     },
   },
   methods: {
+    joinSocketRoom() {
+      this.$http.get(`${config.api_url}/api/auth`, {}).then((resp) => {
+        const roomId = resp.body.room;
+        this.$socket.emit('join_room', roomId);
+        this.appendDispMsg('Emit join_room');
+      }, (resp) => {
+        this.vueResErrorHandler(resp);
+      });
+    },
     appendDispMsg(msg) {
       const time = Moment().format('HH:mm:ss');
       this.system.display_message += `\n${time}: ${msg}`;
@@ -197,6 +207,8 @@ export default {
     updateSubject() {
       this.$http.get(`${config.api_url}/public/subject`, {}).then((resp) => {
         this.current_subject = resp.body;
+      }, (resp) => {
+        this.vueResErrorHandler(resp);
       });
     },
     changeSubject() {

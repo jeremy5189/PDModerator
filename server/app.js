@@ -13,6 +13,7 @@ var public = require('./routes/public.js');
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
+var srvConfig = require('../server-config.json');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,6 +23,17 @@ app.set('view engine', 'ejs');
 app.use(function(req, res, next) {
   res.io = io;
   next();
+});
+
+// handle incoming connections from clients
+io.sockets.on('connection', function(socket) {
+  // once a client has connected, we expect to get a ping from them saying what room they want to join
+  console.log('Websocket: Connect');
+  socket.on('join_room', function(roomId) {
+    console.log('Websocket: Join ' + roomId);
+    if (srvConfig.websocket.secret === roomId)
+      socket.join(roomId);
+  });
 });
 
 var allowCrossDomain = function(req, res, next) {

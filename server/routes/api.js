@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var { ObjectID } = require('mongodb'); // MongoDB _id
 var config = require('../../common-config.json');
-
+var srvConfig = require('../../server-config.json');
 
 /*
  * GET /api/attendee (AUTH)
@@ -164,7 +164,8 @@ router.post('/subject', function(req, res, next) {
 
 router.get('/auth', function(req, res, next) {
   return res.send({
-    message: 'If you see this message without any auth, please protect route /api/* with HTTP basic authentication.'
+    message: 'If you see this message without any auth, please protect route /api/* with HTTP basic authentication.',
+    room: srvConfig.websocket.secret
   });
 });
 

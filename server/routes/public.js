@@ -3,6 +3,7 @@ var router = express.Router();
 var { ObjectID } = require('mongodb'); // MongoDB _id
 var wcwidth = require('wcwidth');
 var config = require('../../common-config.json');
+var srvConfig = require('../../server-config.json');
 
 /*
  * POST /api/attendee
@@ -54,7 +55,7 @@ router.post('/attendee', function(req, res, next) {
     request.post({
       url: 'https://www.google.com/recaptcha/api/siteverify',
       form: {
-        secret: config.reCAPTCHA['secret'],
+        secret: srvConfig.reCAPTCHA['secret'],
         response: req.body.g_recaptcha_response,
         remoteip: req.client.remoteAddress
       }
@@ -107,7 +108,8 @@ router.post('/attendee', function(req, res, next) {
             //console.log(ret.ops);
 
             // Emit Event to moderate
-            res.io.emit('newAttendee', ret.ops);
+            // Only emit to secret room
+            res.io.to(srvConfig.websocket.secret).emit('newAttendee', ret.ops);
 
             res.send({
               status: ret.result.ok
