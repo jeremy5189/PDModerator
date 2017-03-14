@@ -13,7 +13,7 @@
             <th>#</th>
             <th>Name</th>
             <th>Time</th>
-            <th id="summary-th">Summary</th>
+            <th class="summary-th-td">Summary</th>
             <th>Opr</th>
           </tr>
         </thead>
@@ -24,7 +24,7 @@
             </td>
             <td>{{ attendee.attendee_name }}</td>
             <td v-bind:title="attendee.created_at | unix2human">{{ attendee.created_at | unix2time }}</td>
-            <td>{{ attendee.summary }}</td>
+            <td class="summary-th-td">{{ attendee.summary }}</td>
             <td>
               <b-button-group>
                 <b-button v-on:click="removeSpeaker(attendee._id)" variant="danger">✖</b-button>
@@ -315,7 +315,7 @@ export default {
   font-size: 10px;
   height: 80px;
 }
-#summary-th {
+.summary-th-td {
   width: 326px;
   max-width: 326px;
 }
