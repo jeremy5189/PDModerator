@@ -318,6 +318,7 @@ export default {
 .summary-th-td {
   width: 326px;
   max-width: 326px;
+  word-wrap: break-word;
 }
 .btn {
   cursor: pointer;
