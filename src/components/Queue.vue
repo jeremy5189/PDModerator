@@ -34,7 +34,7 @@
       <div class="col-3" id="timer-contain">
 
         <div class="counter">
-          <div class="square" v-on:click="timer_click" v-on:contextmenu="timer_right_click">
+          <div class="square" v-bind:class="{ timer_red: timer.red }" v-on:click="timer_click" v-on:contextmenu="timer_right_click">
             <h3 unselectable="on" class="unselectable square-count">
               {{ timer.countdown }}
             </h3>
@@ -85,6 +85,7 @@ export default {
         countdown: 90,
         handle: null,
         running: false,
+        red: false,
       },
       queue: {
         list: [],
@@ -157,10 +158,14 @@ export default {
         this.timer.countdown = 0;
         this.timer.running = false;
         clearInterval(this.timer.handle);
+        // this.timer.red = false;
+      } else if (this.timer.countdown <= 5 && this.timer.countdown > 0) {
+        this.timer.red = true;
       }
     },
     timer_reset() {
       this.timer_pause();
+      this.timer.red = false;
       this.timer.countdown = this.timer.setting;
     },
     timer_reconfig() {
@@ -412,5 +417,22 @@ body {
    -webkit-user-select: none;
    -ms-user-select: none;
    user-select: none;
+}
+/* The animation code */
+@keyframes color_change {
+    from {
+      background-color: rgba(245, 49, 44, 0.9);
+    }
+    to {
+      background-color: lightgray;
+    }
+}
+.timer_red {
+  background-color: rgba(245, 49, 44, 0.8);
+  color: white;
+  /*animation-name: color_change;
+	animation-duration: 1s;
+	animation-iteration-count: infinite;
+	animation-direction: normal;*/
 }
 </style>
