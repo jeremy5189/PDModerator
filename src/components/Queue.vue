@@ -63,7 +63,7 @@
         <div class="row">
           <div class="col-2 queue-user" v-for="obj in limitQueue">
             <div><div v-bind:title="obj.email" v-bind:style="{ backgroundImage: 'url(' + gravatarSize(obj.gravatar) + ')' }" alt=""></div></div>
-            <p>{{ obj.attendee_name | shortName }}</p>
+            <p>{{ obj.attendee_name }}</p>
           </div>
         </div>
       </div>
@@ -258,15 +258,6 @@ export default {
       }
     },
   },
-  filters: {
-    shortName(str) {
-      let ret = str;
-      if (str.length > 10) {
-        ret = `${ret.substr(0, 10)}..`;
-      }
-      return ret;
-    },
-  },
   computed: {
     limitQueue() {
       return this.queue.list.slice(0, 6);
@@ -277,6 +268,9 @@ export default {
 
 <!-- Add "scoped " attribute to limit CSS to this component only -->
 <style scoped>
+body {
+  overflow: hidden;
+}
 .btn {
   cursor: pointer;
 }
@@ -326,8 +320,8 @@ export default {
   padding-bottom: 0.5em;
 }
 .queue-user div div {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   text-align: justify;
   margin: 0 auto;
   border-radius: 50%;
@@ -359,6 +353,7 @@ export default {
 #summary-contain h3 {
   line-height: 1.4;
   font-size: 1.7em;
+  word-wrap: break-word;
 }
 /* --------- */
 #gravatar-contain {
