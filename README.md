@@ -38,9 +38,9 @@ git clone https://github.com/jeremy5189/PDModerator.git
 cd PDModerator
 npm install
 cp common-config.sample.json common-config.json
-# Edit `common-config.json` to fill in your reCAPTCHA key, MongoDB URL and site url.
+cp server-config.sample.json server-config.json
+# Edit config to fill in your reCAPTCHA key, MongoDB URL, server secret and site url.
 npm run build # build frontend to server/public
-npm run server # start express.js server on localhost:3000
 
 PORT=3001 pm2 start server/bin/www --name=pdmod
 ```
@@ -56,8 +56,7 @@ PORT=3001 pm2 start server/bin/www --name=pdmod
 {
   "reCAPTCHA": {
     "enabled": false,
-    "site_key": "",
-    "secret": ""
+    "site_key": ""
   },
   "ws_url": "http://localhost:3000",
   "api_url": "http://localhost:3000",
