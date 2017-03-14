@@ -136,7 +136,8 @@ export default {
     },
     // User event
     newAttendee(newObj) {
-      this.appendDispMsg('ws: newAttendee');
+      // Disable because of performance issue (slow string concat)
+      // this.appendDispMsg('ws: newAttendee');
       if (config.direct_to_queue) {
         this.updateQueue();
       } else {
