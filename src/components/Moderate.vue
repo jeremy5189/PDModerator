@@ -135,12 +135,12 @@ export default {
       this.system.status = 'warning';
     },
     // User event
-    newAttendee() {
+    newAttendee(newObj) {
       this.appendDispMsg('ws: newAttendee');
       if (config.direct_to_queue) {
         this.updateQueue();
       } else {
-        this.updateUnprocessedAttendee();
+        this.unprocessedAttendee.push(newObj[0]);
       }
     },
     spoken() {
