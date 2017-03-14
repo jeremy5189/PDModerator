@@ -10,7 +10,6 @@ var srvConfig = require('../../server-config.json');
  * Get all unprocessed attendee
  * removed_at == 0 && recognized_at == 0
  * 
- * Websocket Emit: null
  */
 router.get('/attendee', function(req, res, next) {
 
@@ -98,7 +97,7 @@ router.put('/attendee/:id', function(req, res, next) {
       db.close();
 
       // Emit websocket
-      res.io.emit(op_type, op_type);
+      res.io.to(srvConfig.websocket.secret).emit(op_type, op_type);
 
       res.send({
         status: ret.result.ok
@@ -153,7 +152,7 @@ router.post('/subject', function(req, res, next) {
       //console.log(ret.ops);
 
       // Emit Event
-      res.io.emit('subjectChange', req.body.subject);
+      res.io.to(srvConfig.websocket.secret).emit('subjectChange', req.body.subject);
 
       res.send({
         status: ret.result.ok
@@ -162,6 +161,12 @@ router.post('/subject', function(req, res, next) {
   });
 });
 
+/*
+ * GET /api/auth (AUTH)
+ * 
+ * Get secret socket.io room key
+ * 
+ */
 router.get('/auth', function(req, res, next) {
   return res.send({
     message: 'If you see this message without any auth, please protect route /api/* with HTTP basic authentication.',

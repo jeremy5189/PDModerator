@@ -6,7 +6,7 @@ var config = require('../../common-config.json');
 var srvConfig = require('../../server-config.json');
 
 /*
- * POST /api/attendee
+ * POST /public/attendee
  *
  * Accpet application from attendee
  * 
@@ -126,7 +126,7 @@ router.post('/attendee', function(req, res, next) {
 });
 
 /*
- * GET /api/queue
+ * GET /public/queue
  * 
  * Get all attendee in the queue
  * 
@@ -162,7 +162,7 @@ router.get('/queue', function(req, res, next) {
 });
 
 /*
- * GET /api/subject
+ * GET /public/subject
  * 
  * Get latest subject
  * 

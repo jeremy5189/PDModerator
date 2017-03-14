@@ -116,6 +116,12 @@ export default {
     console.info('Timer Hotkey: \nStart/Pause: Space/Ctrl or LClick\nReset: Alt or RClick\nClick remaining text to set custom time');
   },
   methods: {
+    joinSocketRoom() {
+      this.$http.get(`${config.api_url}/api/auth`, {}).then((resp) => {
+        const roomId = resp.body.room;
+        this.$socket.emit('join_room', roomId);
+      });
+    },
     gravatarSize(url) {
       return `${url}?s=131`;
     },
@@ -224,6 +230,7 @@ export default {
     // Default event
     connect() {
       this.system.status = 'success';
+      this.joinSocketRoom();
     },
     error() {
       this.system.status = 'danger';
