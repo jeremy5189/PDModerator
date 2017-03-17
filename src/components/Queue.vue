@@ -26,7 +26,7 @@
             </div>
           </div>
           <div class="col-12" id="summary-contain">
-            <h3>{{ current_speaker.summary }}</h3>
+            <h3 v-bind:class="{ summary_lg_fontsize: summary_lg_fontsize }">{{ current_speaker.summary }}</h3>
           </div>
         </div>
       </div>
@@ -72,6 +72,7 @@
 </template>
 
 <script>
+import wcWidth from 'wcwidth'; // Chinese length = 2
 import config from '../../common-config.json';
 
 export default {
@@ -102,6 +103,7 @@ export default {
       current_speaker: {},
       end_btn_class: 'default', // Normal state
       next_disabled: false, // btn disabled attr
+      summary_lg_fontsize: false,
     };
   },
   created() {
@@ -182,6 +184,9 @@ export default {
       // Move first speaker in list to current_speaker
       if (this.queue.list.length > 0 && this.next_disabled !== true) {
         this.current_speaker = this.queue.list[0];
+        if (wcWidth(this.current_speaker.summary) <= 58) {
+          this.summary_lg_fontsize = true;
+        }
         // Remove first one in queue list
         this.queue.list.shift();
         this.queue.count = this.queue.list.length;
@@ -434,5 +439,9 @@ body {
 	animation-duration: 1s;
 	animation-iteration-count: infinite;
 	animation-direction: normal;*/
+}
+
+.summary_lg_fontsize {
+  font-size: 3em !important; 
 }
 </style>
