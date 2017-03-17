@@ -288,8 +288,8 @@ body {
 /* Right hand site circle control */
 .square {
   background-color: lightgray;
-  height: 157px;
-  width: 157px;
+  height: 20vh;
+  width: 20vh;
   border-radius: 50%;
   display: table;
   margin: 0 auto;
@@ -298,10 +298,10 @@ body {
 .square-count {
   display: table-cell;
   vertical-align: middle;
-  font-size: 3.5em;
+  font-size: 5em;
 }
 .counter {
-  margin-top: 2.2em;
+  margin-top: 2.8em;
 }
 /* --------- */
 #timer-contain {
@@ -312,7 +312,7 @@ body {
 }
 #timer-contain h4 {
   margin-top: 15px;
-  font-size: 2.5em;
+  font-size: 3.2em;
   cursor: pointer;
 }
 /* --------- */
@@ -327,12 +327,12 @@ body {
 }
 .queue-user div {
   width: 100%;
-  margin-top: 1.4em;
+  margin-top: 3.2vh;
   padding-bottom: 0.5em;
 }
 .queue-user div div {
-  width: 50px;
-  height: 50px;
+  width: 15vh;
+  height: 15vh;
   text-align: justify;
   margin: 0 auto;
   border-radius: 50%;
@@ -344,7 +344,7 @@ body {
   background-position: center;
 }
 .queue-user p {
-  font-size: 1.5em;
+  font-size: 3em;
   margin-top: 0.4em;
   line-height: 1;
 }
@@ -353,17 +353,16 @@ body {
   padding: 4em 2em 2.5em 0em;
 }
 #username-contain h2 {
-  font-size: 2.8em;
+  font-size: 5em;
 }
 /* --------- */
 #summary-contain {
-  padding: 0em 1em 2em 3.5em;
-  height: 181px;
-  min-height: 181px;
+  padding: 3em 1em 2em 3.5em;
+  min-height: 35vh;
 }
 #summary-contain h3 {
   line-height: 1.4;
-  font-size: 1.7em;
+  font-size: 3.2em;
   word-wrap: break-word;
 }
 /* --------- */
@@ -371,8 +370,8 @@ body {
   padding: 1.5em 0em 2em 5.3em;
 }
 #gravatar-contain div {
-  width: 130.87px;
-  height: 130.87px;
+  width: 15vh;
+  height: 15vh;
   border-radius: 50%;
   border-width: 3px;
   border-style: solid;
@@ -391,8 +390,7 @@ body {
 #subject-contain {
   padding-top: 2em;
   padding-left: 3.5em;
-  min-height: 144px;
-  height: 144px;
+  min-height: 12vh;
 }
 #subject-contain h1 {
   line-height: 1.3;
@@ -412,11 +410,10 @@ body {
   border-top-width: 3px;
 }
 #userdata-contain {
-  height: 200px;
-  min-height: 200px;
+  min-height: 20vh;
 }
 #speaker-control {
-  margin-top: 1.5em;
+  margin-top: 2.5em;
 }
 *.unselectable {
    -moz-user-select: -moz-none;
@@ -444,6 +441,6 @@ body {
 }
 
 .summary_lg_fontsize {
-  font-size: 3em !important; 
+  font-size: 5em !important;
 }
 </style>
