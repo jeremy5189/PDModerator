@@ -12,7 +12,7 @@
           <!-- Subject -->
           <div class="col-12" id="subject-contain">
             <h1>
-              <b-badge :variant="system.status">目前主題</b-badge> {{ subject }}
+              <b-badge :variant="system.status">目前主題</b-badge> <span class="subject">{{ subject }}</span>
             </h1>
           </div>
           <!-- Current user -->
@@ -347,7 +347,7 @@ body {
 }
 .queue-user p {
   font-size: 3em;
-  margin-top: 0.4em;
+  margin: 0.4em 2vh 0 2vh;
   line-height: 1;
   word-wrap: break-word;
 }
@@ -360,12 +360,12 @@ body {
 }
 /* --------- */
 #summary-contain {
-  padding: 1.3em 1em 2em 3.5em;
-  min-height: 33vh;
+  padding: 0 1em 1em 3.5em;
+  min-height: 30vh;
 }
 #summary-contain h3 {
+  font-size: 3em;
   line-height: 1.4;
-  font-size: 3.3em;
   word-wrap: break-word;
 }
 /* --------- */
@@ -392,8 +392,11 @@ body {
 /* --------- */
 #subject-contain {
   padding-top: 2em;
-  padding-left: 3.5em;
+  padding-left: 3em;
   min-height: 12vh;
+}
+#subject-contain .subject {
+  margin-left: 0.5em;
 }
 #subject-contain h1 {
   line-height: 1.3;
@@ -401,9 +404,8 @@ body {
 }
 /* --------- */
 .logo {
-  height: 45px;
-  max-height: 45px;
-  margin-right: 40px;
+  height: 7vh;
+  margin-right: 65px;
 }
 .highlight {
   color: white;
@@ -446,6 +448,6 @@ body {
 }
 
 .summary_lg_fontsize {
-  font-size: 5em !important;
+  font-size: 4.87em !important;
 }
 </style>
