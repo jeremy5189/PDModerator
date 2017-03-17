@@ -1,7 +1,7 @@
 <template>
   <div class="no-use">
     <div class="row">
-      <div class="col-9">
+      <div class="col-10">
         <!-- Data -->
         <div class="row">
           <!-- Forum Name -->
@@ -32,7 +32,7 @@
         </div>
       </div>
       <!-- Timer -->
-      <div class="col-3" id="timer-contain">
+      <div class="col-2" id="timer-contain">
 
         <div class="counter">
           <div class="square" v-bind:class="{ timer_red: timer.red }" v-on:click="timer_click" v-on:contextmenu="timer_right_click">
@@ -187,6 +187,8 @@ export default {
         this.current_speaker = this.queue.list[0];
         if (wcWidth(this.current_speaker.summary) <= 58) {
           this.summary_lg_fontsize = true;
+        } else {
+          this.summary_lg_fontsize = false;
         }
         // Remove first one in queue list
         this.queue.list.shift();
@@ -327,12 +329,12 @@ body {
 }
 .queue-user div {
   width: 100%;
-  margin-top: 3.2vh;
+  margin-top: 3vh;
   padding-bottom: 0.5em;
 }
 .queue-user div div {
-  width: 15vh;
-  height: 15vh;
+  width: 8.7vh;
+  height: 8.7vh;
   text-align: justify;
   margin: 0 auto;
   border-radius: 50%;
@@ -347,6 +349,7 @@ body {
   font-size: 3em;
   margin-top: 0.4em;
   line-height: 1;
+  word-wrap: break-word;
 }
 /* --------- */
 #username-contain {
@@ -357,12 +360,12 @@ body {
 }
 /* --------- */
 #summary-contain {
-  padding: 3em 1em 2em 3.5em;
-  min-height: 35vh;
+  padding: 1.3em 1em 2em 3.5em;
+  min-height: 33vh;
 }
 #summary-contain h3 {
   line-height: 1.4;
-  font-size: 3.2em;
+  font-size: 3.3em;
   word-wrap: break-word;
 }
 /* --------- */
@@ -394,6 +397,7 @@ body {
 }
 #subject-contain h1 {
   line-height: 1.3;
+  font-size: 3.3em;
 }
 /* --------- */
 .logo {
@@ -411,6 +415,7 @@ body {
 }
 #userdata-contain {
   min-height: 20vh;
+  margin-top: 1.5vh;
 }
 #speaker-control {
   margin-top: 2.5em;
