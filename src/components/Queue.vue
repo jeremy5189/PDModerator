@@ -6,7 +6,8 @@
         <div class="row">
           <!-- Forum Name -->
           <div class="col-12" id="title-contain">
-            <img id="logo" src="../assets/sitcon.svg" alt="">
+            <img class="logo" src="../assets/sitcon.svg" alt="">
+            <img class="logo" style="padding-top: 10px;" src="../assets/itri.png" alt="">
           </div>
           <!-- Subject -->
           <div class="col-12" id="subject-contain">
@@ -397,9 +398,10 @@ body {
   line-height: 1.3;
 }
 /* --------- */
-#logo {
+.logo {
   height: 45px;
   max-height: 45px;
+  margin-right: 40px;
 }
 .highlight {
   color: white;
