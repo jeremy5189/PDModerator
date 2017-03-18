@@ -396,11 +396,13 @@ body {
   min-height: 12vh;
 }
 #subject-contain .subject {
-  margin-left: 0.5em;
+  margin-top: 0.1em;
+  margin-left: 0.3em;
+  font-size: 1em;
 }
 #subject-contain h1 {
-  line-height: 1.3;
-  font-size: 3.3em;
+  line-height: 1.2;
+  font-size: 3em;
 }
 /* --------- */
 .logo {
