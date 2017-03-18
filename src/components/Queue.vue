@@ -96,7 +96,7 @@ export default {
       holder: {
         attendee_name: '主持人',
         gravatar: 'https://www.gravatar.com/avatar/000?s=131',
-        summary: 'N/A',
+        summary: '', // Empty for holder
       },
       system: {
         status: 'default', // While loading
