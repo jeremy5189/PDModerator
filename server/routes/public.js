@@ -191,7 +191,10 @@ router.get('/subject', function(req, res, next) {
     }).limit(1).toArray(function(err, ret) {
       assert.equal(null, err);
       db.close();
-      res.send(ret[0].subject);
+      if (ret.length === 0)
+        res.send('(No Subject)');
+      else
+        res.send(ret[0].subject);
     });
   });
 });
