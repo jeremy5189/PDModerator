@@ -66,12 +66,16 @@ router.post('/attendee', function(req, res, next) {
         !(config.reCAPTCHA['enabled'])) {
 
         var timestamp = moment().unix();
+        
+        var hash = '';
+        if (req.body.email !== null)
+          hash = md5(req.body.email);
 
         var attendee = {
           attendee_name: req.body.attendee_name,
           summary: req.body.summary,
           email: req.body.email,
-          gravatar: `https://www.gravatar.com/avatar/${md5(req.body.email)}`,
+          gravatar: `https://www.gravatar.com/avatar/${hash}`,
           created_at: timestamp,
           recognized_at: config.direct_to_queue ? timestamp : 0, // To be toggled by moderators or direct
           spoken_at: 0,

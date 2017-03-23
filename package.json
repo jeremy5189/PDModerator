@@ -1,6 +1,6 @@
 {
   "name": "pdmoderator",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Panel Discussion Moderator made with Express.js + MongoDB + Vue.js",
   "private": true,
   "scripts": {
