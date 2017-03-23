@@ -6,6 +6,12 @@ PDMod aims to provide equal speaking rights to every attendee in the conference 
 
 PDMod 致力於會議或論壇中提供所有參與者平等的發言權利。與會者透過系統介面提出發言申請後，所提交的資訊會即時送至主持人介面，由主持人審核後 (調整 `config.direct_to_queue` 設定可省略此步驟) 排入發言佇列。發言佇列介面會透過投影機展示給所有參與者，即時呈現最近六位發言者、目前發言者，目前討論主題（由主持人介面設定）以及計時器剩餘時間。
 
+## Live Demo
+
+- [Attendee](https://pd.cloudmun.com.tw/#/attendee)
+- [Moderate](https://pd.cloudmun.com.tw/#/moderate)
+- [Queue](https://pd.cloudmun.com.tw/#/queue)
+
 ## SITCON 2017 @ Academia Sinica
 
 ![https://i.imgur.com/4pIJhN3.png](https://i.imgur.com/4pIJhN3.png)
